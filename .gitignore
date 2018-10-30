@@ -1,0 +1,4 @@
+.bablerc
+.expo/*
+.watchmanconfig
+.node_modules/*
