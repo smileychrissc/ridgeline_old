@@ -13,6 +13,7 @@ import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
 import { AsyncStorage } from 'react-native';
 
 import { WelcomeText } from './components/WelcomeText.js';
+import { Language } from './components/Lanugage.js';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
 import { LocksNearbyText } from './components/LocksNearbyText.js';
 import { WifiLocks } from './components/WifiLocks.js';
@@ -43,6 +44,7 @@ const SETTINGS_MODAL = 'lock.settings_modal';
 const PROBLEM_MODAL = 'lock.problem_modal';
 const PRIVACY_MODAL = 'lock.privacy_modal';
 
+const DEFAULT_LANGUAGE = 'en_US';
 /*
  * Main class
  */
@@ -62,9 +64,16 @@ export default class App extends React.Component {
       locksNearby: undefined,// Array of registered locks detected to be nearby
       locksNearbyChecking: false, // Flags when we're looking for nearby locks
       modalName: undefined,  // The current modal window to show
+      language: undefined,   // The current language
+      strings: undefined,    // The list of loaded strings
     };
     this.findLocksHandle = undefined;
     this.lockIDs = undefined;
+    
+    // Get the language from the system and then look for a stored setting
+    // This may cause a UI change if the promises aren't executed immediately in
+    // future.
+    getLanguageAndStrings();
     
     // Check if there is a nickname registered
     this.fromKey('nickname')
@@ -94,6 +103,22 @@ export default class App extends React.Component {
                       }
                     })
       .catch((error) => {/*TODO: handle error */});
+  }
+  /*
+   * Function that reteieves the OS language and subsequently
+   * loads a stored UI Language string if it's been overridden
+   * The state gets updated with the language and its strings
+   */
+  getLanguageAndStrings() {
+    this.fromKey('language')
+      .then((language) => {
+          if ((typeof language != 'string') || (language.length < 2)) {
+            language = this.state.language;
+          }
+          Language.getStrings(language || DEFAULT_LANGUAGE,
+                              (language, strings) => this.setState(language, strings););
+        })
+      .catch((error) => {/*TODO: handle error*/});
   }
   /*
    * Function to load a key from AsyncStorage
