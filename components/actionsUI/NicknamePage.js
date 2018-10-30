@@ -1,16 +1,25 @@
+/*
+ * Copyright 2018 Chris Schnaufer All Rights Reserved
+ * Permissions are granted under: GNU Affero General Public License v3.0.
+ * The contents of this file heading may not be modified and must be included
+ * in full with any and all distributions of this file and any derived product
+ * regardless of any modifications.
+ * Use of this file or derived products in any form for illegal activities or
+ * for purposes that can reflect negatively on the original copyright holder(s)
+ * are prohibited.
+ */
 import React from 'react';
-
 import { StyleSheet, Text } from 'react-native';
 
-import { NavigationPage } from './components/actionUI/NavigationPage.js';
+import { NavigationPage } from './NavigationPage.js';
 
 export class NicknamePage extends NavigationPage {
   render() {
     return (
       <NavigationPage>
-        <View style={styles.pages.nickname.container}>
-          <Text style={styles.pages.nickname.prompt}>Enter your nickname</Text>
-          <TextInput style={styles.pages.nickname.nickname} placeholder="Your nickname" />
+        <View style={styles.container}>
+          <Text style={styles.prompt}>Enter your nickname</Text>
+          <TextInput style={styles.nickname} placeholder="Your nickname" />
         </View>
       </NavigationPage>
     );
@@ -18,21 +27,17 @@ export class NicknamePage extends NavigationPage {
 }
 
 const styles = StyleSheet.create({
-  pages: {
-    nickname: {
-      container: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      prompt: {
-        color: '#202020',
-        fontSize: 16,
-        fontStyle: 'normal',
-      },
-      nickname: {
-      }
-    },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  prompt: {
+    color: '#202020',
+    fontSize: 16,
+    fontStyle: 'normal',
+  },
+  nickname: {
   },
 });

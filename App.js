@@ -1,6 +1,16 @@
+/*
+ * Copyright 2018 Chris Schnaufer All Rights Reserved
+ * Permissions are granted under: GNU Affero General Public License v3.0.
+ * The contents of this file heading may not be modified and must be included
+ * in full with any and all distributions of this file and any derived product
+ * regardless of any modifications.
+ * Use of this file or derived products in any form for illegal activities or
+ * for purposes that can reflect negatively on the original copyright holder(s)
+ * are prohibited.
+ */
 import React from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
-import { AsyncStorage, InteractionManager } from 'react-native';
+import { AsyncStorage } from 'react-native';
 
 import { WelcomeText } from './components/WelcomeText.js';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
@@ -105,14 +115,16 @@ export default class App extends React.Component {
    * Returns the decoded JSON value associated with the key,or undefined
    */
   fromKeyJSON(key: string) {
-    try {
-      const data = this.fromKey(key);
-      if (typeof data == 'string')
-        return JSON.parse(data);
-    } catch (error) {
-      // TODO: Handle error
-    }
-    return undefined;
+    return new Promise((resolve,reject) => {
+      try {
+        const data = this.fromKey(key);
+        if (typeof data == 'string')
+          resolve(JSON.parse(data));
+      } catch (error) {
+        reject(error);
+      }
+      resolve(undefined);
+    });
   }
   /*
    * Function to store a value into AsyncStorage
@@ -278,7 +290,7 @@ export default class App extends React.Component {
     this.setState({modalName: SETTINGS_MODAL});
   }
   
-//  onPressLogs() {}
+  onPressLogs() {}
 
   onPressProblems() {
     this.setState({modalName: PROBLEM_MODAL});
@@ -319,14 +331,18 @@ export default class App extends React.Component {
             />
         </View>
         <View>
-          <Button title="Remember Location"
-            accessibilityLabel="Save the current location of this lock"
-            onPress={this.onPressRemember.bind(this)}
-            />
-          <Button title="Goto Lock Location"
-            accessibilityLabel="Show me the last known location of this lock"
-            onPress={this.onPressGoto.bind(this)}
-            />
+          {
+            this.state.locksNearbyCount && <Button title="Remember Location"
+              accessibilityLabel="Save the current location of this lock"
+              onPress={this.onPressRemember.bind(this)}
+              />
+          }
+          {
+            this.state.lockCount && <Button title="Goto Lock Location"
+              accessibilityLabel="Show me the last known location of this lock"
+              onPress={this.onPressGoto.bind(this)}
+              />
+          }
         </View>
         <View>
           {
@@ -352,23 +368,24 @@ export default class App extends React.Component {
           <Button title="Settings"
             accessibilityLabel="Configure location auto saving and other features"
             onPress={this.onPressSettings.bind(this)}
-        />
-/*          <Button title="Logs"
+          />
+          <Button visible={false} title="Logs"
             accessibilityLabel="View lock logs"
             onPress={this.onPressLogs.bind(this)}
-        />*/
+          />
           <Button title="Problems"
             accessibilityLabel="I'm having problems with my lock"
             onPress={this.onPressProblems.bind(this)}
-        />
+          />
           <Button title="Privacy"
             accessibilityLabel="Our Privacy Policies"
             onPress={this.onPressPrivacy.bind(this)}
-        />
+          />
         </View>
         {
          (this.state.modalName == NEW_LOCK_MODAL) &&
              <NewLockModal nickname={this.state.nickname}
+                           lockIDs={this.state.lockIDs}
                            update={this.newLockRegister.bind(this)} />
         }
         {
@@ -386,7 +403,7 @@ export default class App extends React.Component {
               <LocationModal />
         }
         {
-          (this.state.modalName == GOT_FAILED_MODAL) &&
+          (this.state.modalName == GOTO_FAILED_MODAL) &&
               <GotoFailedModal />
         }
         {

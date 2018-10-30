@@ -9,17 +9,29 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { FlatList, StyleSheet, Text } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class LockNamePage extends NavigationPage {
+export class NicknamePage extends NavigationPage {
+  constructor(props) {
+    super(props);
+    
+    let locks = (props.lockIDs ? props.lockIDs.split(',') : []);
+    this.state = {
+      locks,
+    };
+  }
+  
   render() {
     return (
       <NavigationPage>
         <View style={styles.container}>
-          <Text style={styles.prompt}>Enter an optional name for this lock</Text>
-          <TextInput style={styles.name} placeholder="Lock name" />
+        {
+          <FlatList data={this.state.locks}
+                    renderItem={(item)=>(<Text style={styles.lockID}>{item}</Text>)}
+          />
+        }
         </View>
       </NavigationPage>
     );
@@ -33,12 +45,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  prompt: {
+  lockID: {
     color: '#202020',
     fontSize: 16,
-    fontStyle: 'italic',
-  },
-  name: {
+    fontStyle: 'normal',
   },
 });
-

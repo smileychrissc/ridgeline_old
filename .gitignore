@@ -1,4 +1,7 @@
 .bablerc
 .expo/*
 .watchmanconfig
-.node_modules/*
+node_modules/*
+lock.xcworkspace/*
+.babelrc
+other/*

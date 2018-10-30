@@ -1,5 +1,14 @@
+/*
+ * Copyright 2018 Chris Schnaufer All Rights Reserved
+ * Permissions are granted under: GNU Affero General Public License v3.0.
+ * The contents of this file heading may not be modified and must be included
+ * in full with any and all distributions of this file and any derived product
+ * regardless of any modifications.
+ * Use of this file or derived products in any form for illegal activities or
+ * for purposes that can reflect negatively on the original copyright holder(s)
+ * are prohibited.
+ */
 import React from 'react';
-
 import { Modal, StyleSheet } from 'react-native';
 
 import { NicknamePage } from './NicknamePage.js';
@@ -14,13 +23,13 @@ const LOCK_NAME_PAGE       = 'lock.name';
 const LOCK_PASSCODE_PAGE   = 'lock.passcode';
 const NEW_LOCK_FINISH_PAGE = 'lock.newFinish';
 
-const pages[] = {
+const page = [
   NICKNAME_PAGE,
   LOCK_SELECT_PAGE,
   LOCK_NAME_PAGE,
   LOCK_PASSCODE_PAGE,
   NEW_LOCK_FINISH_PAGE,
-};
+];
 
 export class NewLockModal extends React.Component {
 
@@ -111,10 +120,10 @@ export class NewLockModal extends React.Component {
     let pageName = pages[curPage];
     return (
         <Modal
-          animationType: 'none'
-          transparent: {true}
-          visible: {true}
-          presentationStyle: 'overFullScreen'
+          animationType='none'
+          transparent={true}
+          visible={true}
+          presentationStyle='overFullScreen'
           style={styles.newLockModal}
         >
           {
@@ -123,7 +132,8 @@ export class NewLockModal extends React.Component {
           }
           {
             (pageName == LOCK_SELECT_PAGE) &&
-                <LockSelectPage prev={this.prevPage.bind(this)}
+                <LockSelectPage lockIDs={this.props.lockIDs}
+                                prev={this.prevPage.bind(this)}
                                 next={this.nextPage.bind(this)}
                                 update={this.updateLockID.bind(this)} />
           }

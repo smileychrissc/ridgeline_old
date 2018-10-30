@@ -1,31 +1,40 @@
+/*
+ * Copyright 2018 Chris Schnaufer All Rights Reserved
+ * Permissions are granted under: GNU Affero General Public License v3.0.
+ * The contents of this file heading may not be modified and must be included
+ * in full with any and all distributions of this file and any derived product
+ * regardless of any modifications.
+ * Use of this file or derived products in any form for illegal activities or
+ * for purposes that can reflect negatively on the original copyright holder(s)
+ * are prohibited.
+ */
 import React from 'react';
-
 import { StyleSheet, Text, View } from 'react-native';
 
-import { NavigationButton } from './components/actionsUI/NavigationButton.js';
+import { NavigationButton } from './NavigationButton.js';
 
 export class NavigationPage extends React.Component {
   render() {
     return (
-      <View style={styles.navigation.view}>
+      <View style={styles.view}>
         {
-          this.props.title && <Text style={styles.navigation.title}>{this.props.title}</Text>
+          this.props.title && <Text style={styles.title}>{this.props.title}</Text>
         }
-        <View style={styles.navigation.centerView}>
+        <View style={styles.centerView}>
           {
             this.props.prev &&
-              <NavigationButton source='./assets/prev.gif' title='Prev' />
+              <NavigationButton source={require('../../assets/prev.gif')} title='Prev' />
           }
           {
-            {this.props.children}
+            this.props.children
           }
           {
             this.props.next &&
-              <NavigationButton source='./assets/next.gif' title='Next' direction='left' />
+              <NavigationButton source={require('../../assets/next.gif')} title='Next' direction='left' />
           }
         </View>
         {
-          <NavigationButton source='./assets/cancel.gif' title='Cancel' />
+          <NavigationButton source={require('../../assets/cancel.gif')} title='Cancel' />
         }
       </View>
     );
@@ -33,23 +42,21 @@ export class NavigationPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  navigation: {
-    view: {
-      backgroundColor: '#e0e0e0',
-      flex: 1,
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'space-around',
-    },
-    centerView: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: 'bold',
-    },
+  view: {
+    backgroundColor: '#e0e0e0',
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  centerView: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });

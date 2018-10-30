@@ -1,9 +1,18 @@
+/*
+ * Copyright 2018 Chris Schnaufer All Rights Reserved
+ * Permissions are granted under: GNU Affero General Public License v3.0.
+ * The contents of this file heading may not be modified and must be included
+ * in full with any and all distributions of this file and any derived product
+ * regardless of any modifications.
+ * Use of this file or derived products in any form for illegal activities or
+ * for purposes that can reflect negatively on the original copyright holder(s)
+ * are prohibited.
+ */
 import React from 'react';
-
 import { StyleSheet, View } from 'react-native';
 
-import { FingerprintCapture } from './components/actionsUI/FingerprintCapture.js'
-import { NavigationButton } from './components/actionsUI/NavigationButton.js'
+import { FingerprintCapture } from './FingerprintCapture.js';
+import { NavigationButton } from './NavigationButton.js';
 
 export class FingerprintCapturePage extends React.Component {
   constructor(props) {
@@ -37,8 +46,8 @@ export class FingerprintCapturePage extends React.Component {
     let instructions = (this.state.numberCaptures == 0) ?
                             'Place finger on sensor' : 'Place same finger on sensor again';
     return (
-      <View style={styles.pages.fingerprintCapture.container}>
-        <FingerprintCapture captured=false
+      <View style={styles.container}>
+        <FingerprintCapture captured={false}
                          prompt={prompt}
                          instructions={instructions}
                          message={this.state.message} />
@@ -49,11 +58,10 @@ export class FingerprintCapturePage extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  pages: {
-    fingerprintCapture: {
-      container: {
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

@@ -1,28 +1,39 @@
+/*
+ * Copyright 2018 Chris Schnaufer All Rights Reserved
+ * Permissions are granted under: GNU Affero General Public License v3.0.
+ * The contents of this file heading may not be modified and must be included
+ * in full with any and all distributions of this file and any derived product
+ * regardless of any modifications.
+ * Use of this file or derived products in any form for illegal activities or
+ * for purposes that can reflect negatively on the original copyright holder(s)
+ * are prohibited.
+ */
 import React from 'react'
-
 import { Image, StyleSheet, Text } from 'react-native';
 
 export class NavigationButton extends React.Component {
   render() {
-    {
-      this.props.title && this.props.direction && (this.props.direction == 'left') &&
-          <Text style={styles.navigation.pageButton}>{this.props.title}</Text>
-    }
-    <Image source={require({this.props.source})}) />
-    {
-      this.props.title && (!this.props.direction || (this.props.direction != 'left') &&
-          <Text style={styles.navigation.pageButton}>{this.props.title}</Text>
-    }
+    return (
+      <View>
+        {
+          this.props.title && this.props.direction && (this.props.direction == 'left') &&
+              <Text style={styles.pageButton}>this.props.title</Text>
+        }
+        <Image source={this.props.source} />
+        {
+          this.props.title && (!this.props.direction || (this.props.direction != 'left')) &&
+              <Text style={styles.pageButton}>{this.props.title}</Text>
+        }
+      </View>
+    );
   }
 }
 
-const styles = StyleSheet.create( {
-  navigation: {
-    pageButton: {
-      color: '#808080',
-      fontSize: 12,
-      fontWeight: 'normal',
-      fontStyle: 'normal',
-    }
+const styles = StyleSheet.create({
+  pageButton: {
+    color: '#808080',
+    fontSize: 12,
+    fontWeight: 'normal',
+    fontStyle: 'normal',
   }
 });
