@@ -9,28 +9,37 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
-import { FingerprintCapture } from './FingerprintCapture.js';
 import { NavigationPage } from './NavigationPage.js';
 
-export class FingerprintCapturePage extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  
+export class LockCodePage extends React.Component {
   render() {
-    let prompt = 'Capturing ' + (this.props.captured + 1) + ' out of ' + this.props.fingerprints;
-    let instructions = (this.props.captured == 0) ?
-                            'Place finger on sensor' : 'Place same finger on sensor again';
     return (
       <NavigationPage>
-        <FingerprintCapture prompt={prompt}
-                         instructions={instructions} />
+        <View style={styles.container}>
+          <Text style={styles.prompt}>Enter the code for the lock</Text>
+          <TextInput style={styles.name} placeholder="Lock code" onChangeText={this.props.update}/>
+        </View>
       </NavigationPage>
-   );
+    );
   }
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  prompt: {
+    color: '#202020',
+    fontSize: 16,
+    fontStyle: 'italic',
+  },
+  name: {
+  },
 });
+
+

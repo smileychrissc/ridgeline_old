@@ -23,18 +23,26 @@ export class NavigationPage extends React.Component {
         <View style={styles.centerView}>
           {
             this.props.prev &&
-              <NavigationButton source={require('../../assets/prev.gif')} title='Prev' />
+              <NavigationButton source={require('../../assets/prev.gif')}
+                                title='Prev'
+                                action={this.props.prev} />
           }
           {
             this.props.children
           }
           {
             this.props.next &&
-              <NavigationButton source={require('../../assets/next.gif')} title='Next' direction='left' />
+              <NavigationButton source={require('../../assets/next.gif')}
+                                title='Next'
+                                direction='left'
+                                action={this.props.next} />
           }
         </View>
         {
-          <NavigationButton source={require('../../assets/cancel.gif')} title='Cancel' />
+          this.props.cancel &&
+              <NavigationButton source={require('../../assets/cancel.gif')}
+                                title='Cancel'
+                                action={this.props.cancel} />
         }
       </View>
     );

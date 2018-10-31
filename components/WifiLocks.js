@@ -65,4 +65,20 @@ export class WifiLocks extends React.Component {
     // Sends the passcode to the lock
     return true;
   }
+  
+  beginFingerprintCapture(lockID: string) {
+  
+  }
+  
+  cancelFingerprintCapture(lockID: string) {
+  
+  }
+  
+  captureFingerprint(lockID: string) {
+  
+  }
+  
+  keepFingerprint(lockID: string) {
+  
+  }
 }

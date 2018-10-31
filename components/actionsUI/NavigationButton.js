@@ -9,21 +9,25 @@
  * are prohibited.
  */
 import React from 'react'
-import { Image, StyleSheet, Text } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export class NavigationButton extends React.Component {
   render() {
     return (
       <View>
-        {
-          this.props.title && this.props.direction && (this.props.direction == 'left') &&
-              <Text style={styles.pageButton}>this.props.title</Text>
-        }
-        <Image source={this.props.source} />
-        {
-          this.props.title && (!this.props.direction || (this.props.direction != 'left')) &&
-              <Text style={styles.pageButton}>{this.props.title}</Text>
-        }
+        <TouchableOpacity onPress={this.props.action}>
+          <View>
+            {
+              this.props.title && this.props.direction && (this.props.direction == 'left') &&
+                  <Text style={styles.pageButton}>this.props.title</Text>
+            }
+            <Image source={this.props.source} />
+            {
+              this.props.title && (!this.props.direction || (this.props.direction != 'left')) &&
+                  <Text style={styles.pageButton}>{this.props.title}</Text>
+            }
+          </View>
+        <TouchableOpacity>
       </View>
     );
   }

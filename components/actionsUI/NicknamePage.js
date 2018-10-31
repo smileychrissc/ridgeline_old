@@ -13,19 +13,28 @@ import { StyleSheet, Text } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class NicknamePage extends NavigationPage {
+/*
+ * Page for specifying the user's nickname
+ */
+export class NicknamePage extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage>
         <View style={styles.container}>
           <Text style={styles.prompt}>Enter your nickname</Text>
-          <TextInput style={styles.nickname} placeholder="Your nickname" />
+          <TextInput style={styles.nickname} placeholder="Your nickname" onChangeText={this.props.update}/>
         </View>
       </NavigationPage>
     );
   }
 }
 
+/*
+ * Styles for this page
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -11,28 +11,43 @@
 import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
 
+import { LockInfo } from '../../LockInfo.js';
+
 import { NicknamePage } from './NicknamePage.js';
-import { LockSelectPage } from './LockSelectPage.js';
+import { LockCodePage } from './LockCodePage.js';
 import { LockNamePage } from './LockNamePage.js';
 import { LockPasscodePage } from './LockPasscodePage.js';
 import { NewLockFinishPage } from './NewLockFinishPage.js';
 
+// Tags for different pages
 const NICKNAME_PAGE        = 'lock.nickname';
-const LOCK_SELECT_PAGE     = 'lock.select';
+const LOCK_CODE_PAGE       = 'lock.code';
 const LOCK_NAME_PAGE       = 'lock.name';
 const LOCK_PASSCODE_PAGE   = 'lock.passcode';
 const NEW_LOCK_FINISH_PAGE = 'lock.newFinish';
 
+/*
+ * Ordered list of pages to show
+ */
 const page = [
   NICKNAME_PAGE,
-  LOCK_SELECT_PAGE,
+  LOCK_CODE_PAGE,
   LOCK_NAME_PAGE,
   LOCK_PASSCODE_PAGE,
   NEW_LOCK_FINISH_PAGE,
 ];
 
+/*
+ * Class allowing users to add a new lock to their list of locks
+ * Props:
+ *   update - Function to call when user has completed entering their data
+ *   nickname - The user's nickname
+ *   lockIDs - The list of currently known lock IDs
+ */
 export class NewLockModal extends React.Component {
-
+  /*
+   * Initialization of instance
+   */
   constructor(props) {
     super(props);
     
@@ -42,72 +57,102 @@ export class NewLockModal extends React.Component {
       errorMsg = 'Internal Error';
     }
     
+    // Setup the state. The first page we show is the user's nickname if we don't have one
+    // already
     this.state = {
       curPage: ((typeof this.props.nickname == 'string') && (this.props.nickname.length > 0)) ? 1 : 0,
       nickname: this.props.nickname,
       finished: false,
       errorMsg,
     };
+    
+    // Bind callback functions
+    this.nextPage = this.nextPage.bind(this);
+    this.prevPage = this.prevPage.bind(this);
+    this.registerNewLock = this.registerNewLock.bind(this);
+    this.updateLockID = this.updateLockID.bind(this);
+    this.updateLockName = this.updateLockName.bind(this);
+    this.updateLockPasscode = this.updateLockPasscode.bind(this);
+    this.updateNickname = this.updateNickname.bind(this);
   }
-  
+  /*
+   * Determines when a state change can update the UI
+   */
   shouldComponentUpdate(nextProps, nextState) {
-    // Only update if we're changing visibility state or we're visible and have a new page
-    return (this.props.visible != nextProps.visible) ||
-           (nextProps.visible && (
-                                  (this.state.nextPage != nextState.nextPage) ||
-                                  (this.state.finished != nextState.finished)
-            ));
+    // Only update if we have a new page
+    return (
+            (this.state.nextPage != nextState.nextPage) ||
+            (this.state.finished != nextState.finished)
+           );
   }
-  
+  /*
+   * Navigate to the previous page
+   */
   prevPage() {
     let curPage = this.state.curPage;
     
     if (curPage > 0)
       this.setState({curPage: curPage - 1});
   }
-  
+  /*
+   * Navigate to the next page
+   */
   nextPage() {
     let curPage = this.state.curPage;
 
     if (curPage < pages.size - 1)
       this.setState({curPage: curPage + 1});
   }
-  
+  /*
+   * Handles registering the new lock
+   */
+  registerNewLock() {
+    this.setState({finished: false});
+    this.nextPage();
+    
+    // Gather the information and register the new lock
+    let newLockInfo = LockInfo.create(this.state.lockID, this.state.lockName, this.state.passcode);
+    if ((typeof this.state.nickname == 'string') && (this.state.nickname != this.props.nickname))
+      newLockInfo.nickname = this.state.nickname;
+
+    // Delay the update of the lock info so that the UI has a chance to update
+    setTimer(() => {
+        this.props.update(newLockInfo);
+    
+        this.setState({finished: true});
+      }, 200);
+  }
+  /*
+   * Update the user's nickname
+   */
   updateNickname(nickname: string) {
     this.setState({nickname});
     return true;
   }
-  
+  /*
+   * Update the lock ID
+   */
   updateLockID(lockID: string) {
     this.setState({lockID});
     return true;
   }
-  
+  /*
+   * Update the lock name
+   */
   updateLockName(lockName: string) {
     this.setState({lockName});
     return true;
   }
-  
+  /*
+   * Update the lock passcode
+   */
   updateLockPasscode(passcode: string) {
     this.setState({passcode});
     return true;
   }
-
-  finished(save: boolean) {
-    // Gather the information and register the new lock
-    let newLockInfo = {'lockID': this.state.lockID,
-                       'lockName': this.state.lockName};
-    
-    if ((typeof this.state.nickname == 'string') && (this.state.nickname != this.props.nickname))
-      newLockInfo.nickname = this.state.nickname;
-    if (typeof this.state.passcode == 'string')
-      newLockInfo.passcode = this.state.passcode;
-
-    this.props.update(newLockInfo);
-    
-    this.setState({finished: true});
-  }
-  
+  /*
+   * The UI to show
+   */
   render() {
     let curPage = this.state.curPage;
     
@@ -128,31 +173,33 @@ export class NewLockModal extends React.Component {
         >
           {
             (pageName == NICKNAME_PAGE) &&
-                <NicknamePage next={this.nextPage.bind(this)} update={this.updateNickname.bind(this)}/>
+                <NicknamePage next={this.nextPage} update={this.updateNickname} />
           }
           {
-            (pageName == LOCK_SELECT_PAGE) &&
-                <LockSelectPage lockIDs={this.props.lockIDs}
-                                prev={this.prevPage.bind(this)}
-                                next={this.nextPage.bind(this)}
-                                update={this.updateLockID.bind(this)} />
+            (pageName == LOCK_CODE_PAGE) &&
+                <LockCodePage lockIDs={this.props.lockIDs}
+                                prev={this.prevPage}
+                                next={this.nextPage}
+                                update={this.updateLockID}
+                                cancel={this.props.cancel} />
           }
           {
             (pageName == LOCK_NAME_PAGE) &&
-                <LockNamePage prev={this.prevPage.bind(this)}
-                              next={this.nextPage.bind(this)}
-                              update={this.updateLockName.bind(this)} />
+                <LockNamePage prev={this.prevPage}
+                              next={this.nextPage}
+                              update={this.updateLockName}
+                              cancel={this.props.cancel} />
           }
           {
             (pageName == LOCK_PASSCODE_PAGE) &&
-                <LockPasscodePage prev={this.prevPage.bind(this)}
-                              next={this.nextPage.bind(this)}
-                              update={this.updateLockPasscode.bind(this)} />
+                <LockPasscodePage prev={this.prevPage}
+                              next={this.registerNewLock}
+                              update={this.updateLockPasscode}
+                              cancel={this.props.cancel} />
           }
           {
             (pageName == NEW_LOCK_FINISH_PAGE) &&
-                <NewLockFinishPage prev={this.prevPage.bind(this)}
-                                   next={this.state.finished ? this.finished.bind(this) : undefined}
+                <NewLockFinishPage prev={this.prevPage}
                                    finished={this.state.finished} />
           }
         </Modal>
@@ -160,6 +207,9 @@ export class NewLockModal extends React.Component {
   }
 }
 
+/*
+ * Styles for this modal
+ */
 const styles = StyleSheet.create({
   newLockModal: {
     backgroundColor: '#a0a0a0',

@@ -12,6 +12,7 @@ import React from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 import { AsyncStorage } from 'react-native';
 
+import { Config } from './Config.js';
 import { WelcomeText } from './components/WelcomeText.js';
 import { Language } from './components/Language';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
@@ -70,6 +71,14 @@ export default class App extends React.Component {
     this.findLocksHandle = undefined;
     this.lockIDs = undefined;
     
+    // Perform function bindings
+    this.cancelModal = this.cancelModal.bind(this);
+    this.cancelFingerprint = this.cancelFingerprint.bind(this);
+    this.captureFingerprint = this.captureFingerprint.bind(this);
+    this.findLocks = this.findLocks.bind(this);
+    this.newFingerprint = this.newFingerprint.bind(this);
+    this.newLockRegister = this.newLockRegister.bind(this);
+
     // Get the language from the system and then look for a stored setting
     // This may cause a UI change if the promises aren't executed immediately in
     // future.
@@ -91,7 +100,7 @@ export default class App extends React.Component {
                             clearTimeout(this.findLocksHandle);
                             this.findLocksHandle = undefined;
                           }
-                          this.findLocksHandle = setTimeout(this.findLocks.bind(this), 500);
+                          this.findLocksHandle = setTimeout(this.findLocks, Config.findLocksDelayMs);
                       } else {
                         let newState = {'locksNearbyChecking': false};
                         if (this.state.lockCount) {
@@ -207,6 +216,12 @@ export default class App extends React.Component {
     this.setKey('nickname', nickname);
   }
   /*
+   * Used to cancel any modal window shown
+   */
+  cancelModal() {
+    this.setState({modalName: undefined});
+  }
+  /*
    * Used to register a new lock on this device
    * lockInfo - The user entered information on the new lock
    */
@@ -219,17 +234,26 @@ export default class App extends React.Component {
       newState.newUser = false;
       newState.nickname = lockInfo.nickname;
     }
+    
+    // TODO: Make sure we're not registering a lock twice
+    
     // If the lock is still nearby, we bind it and our device
     if (WifiLocks.confirmNearby(lockInfo.lockID)) {
       let locks = this.state.locks;
       let passcode = lockInfo.passcode || '';
-      WifiLocks.bindToDevice(lockInfo.lockID, lockInfo.lockName, passcode)
+      WifiLocks.bindToDevice(lockInfo.lockID, lockInfo.name, passcode)
         .then((lock) => {locks.push(lock);
                          newState.lockCount = locks.size;
                          newState.locks = locks;
-                         newState.modalName = NEW_FINGERPRINT_MODAL;
                          newState.activeLock = lock.size - 1;
-                        })
+ 
+                         setTimer(() => {
+                              this.setState({modalName: NEW_FINGERPRINT_MODAL});
+                              WifiLocks.beginFingerprintCapture(lockInfo.lockID);
+                            }, Config.newLockFingerprintDelayMs);
+              
+                         // TODO: Store our updated locks
+            })
         .catch((error) => {/* TODO: handle error */});
     } else {
       // TODO: Handle error
@@ -241,9 +265,20 @@ export default class App extends React.Component {
     }
   }
   /*
-   * Indicates that we're updated a fingerprint on the device
+   * Cause the lock to capture a fingerprint
+   * lockID - the ID of the lock to capture a fingerprint on
+   * cb - callback function for when a capture is done
    */
-  newFingerprint() {
+  captureFingerprint(lockID: string, cb: function) {
+    cb(WifiLocks.captureFingerprint(lockID));
+  }
+  /*
+   * Indicates that we're updated a fingerprint on the device
+   * lockID - the ID of the lock to capture a fingerprint on
+   */
+  newFingerprint(lockID: string) {
+    WifiLocks.keepFingerprint(lockID);
+  
     if (this.state.modalName)
       this.setState({modalName: undefined});
     
@@ -255,6 +290,16 @@ export default class App extends React.Component {
       // TODO: Report error
       return;
     }
+  }
+  /*
+   * Cancel the fingerprint capturing discarding the new fingerprint
+   * lockID - the ID of the lock to capture a fingerprint on
+   */
+  cancelFingerprint(lockID: string) {
+    WifiLocks.cancelFingerprintCapture(lockID);
+  
+    if (this.state.modalName)
+      this.setState({modalName: undefined});
   }
   
   unlock() {
@@ -411,12 +456,15 @@ export default class App extends React.Component {
          (this.state.modalName == NEW_LOCK_MODAL) &&
              <NewLockModal nickname={this.state.nickname}
                            lockIDs={this.state.lockIDs}
-                           update={this.newLockRegister.bind(this)} />
+                           update={this.newLockRegister}
+                           cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == NEW_FINGERPRINT_MODAL) &&
               <NewFingerprintModal lockID={this.state.locks[this.state.activeLock].lockID}
-                                   update={this.newFingerprint.bind(this)} />
+                                   capture={this.captureFingerprint}
+                                   update={this.newFingerprint}
+                                   cancel={this.cancelFingerprint} />
         }
         {
           (this.state.modalName == UNLOCK_MODAL) &&

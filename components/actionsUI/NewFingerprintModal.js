@@ -11,24 +11,54 @@
 import React from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 
+import { Config } from '../../Config.js';
+
 import { FingerprintCapturePage } from './FingerprintCapturePage.js';
 
+/*
+ * Fingerprint capturing UI
+ */
 export class NewFingerprintModal extends React.Component {
+  /*
+   * Prepares instance
+   */
   constructor(props) {
     super(props);
-  }
-  
-  componentDidMount() {
-    // Register to get fingerprint events
     
-    // Begin capture events
+    this.state = {
+      captured: 0
+    };
+    
+    this.haveFingerprint.bind(this);
   }
-  
-  componentWillUnmount() {
-    // Unregister from fingerprint events
+  /*
+   * Begin capturing fingerprints
+   */
+  componentDidMount() {
+    // Begin capturing fingerprints
+    setTimeout(() => {this.props.capture(this.props.lockID, this.haveFingerprint);}, 100);
   }
-  
+  /*
+   * Callback for when a fingerprint was captured
+   */
+  haveFingerprint(success: boolean) {
+    if (success) {
+      this.setState({captured: (this.state.captured + 1)});
+      if (this.state.captured < Config.fingerprintCaptureCount) {
+        setTimeout(() => {this.props.capture(this.props.lockID, this.haveFingerprint);}, 100);
+      }
+    } else {
+      // TODO: handle error (ask user or just let them know it failed)
+    }
+  }
+  /*
+   * UI rendering function
+   */
   render() {
+    let cancel = this.state.captured < Config.fingerprintCaptureCount ?
+                         () => {this.props.cancel(this.props.lockID)} : undefined;
+    let next = this.state.captured >= Config.fingerprintCaptureCount ?
+                         () => {this.props.update(this.props.lockID)} : undefined;
     return (
       <Modal
         animationType='none'
@@ -37,12 +67,18 @@ export class NewFingerprintModal extends React.Component {
         presentationStyle='overFullScreen'
         style={styles.newFingerprintModal}
       >
-        <FingerprintCapturePage fingerprints="3" />
+        <FingerprintCapturePage captured={this.state.captured}
+                                fingerprints={Config.fingerprintCaptureCount}
+                                next={next}
+                                cancel={cancel} />
       </Modal>
     );
   }
 }
 
+/*
+ * Styles for this modal
+ */
 const styles = StyleSheet.create({
   newFingerprintModal: {
     backgroundColor: '#ffe4e4',

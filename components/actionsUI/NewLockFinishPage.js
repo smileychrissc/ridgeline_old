@@ -13,7 +13,13 @@ import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class NewLockFinishPage extends NavigationPage {
+/*
+ * Page for confirming that data for a new lock was entered
+ */
+export class NewLockFinishPage extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage>
@@ -40,6 +46,9 @@ export class NewLockFinishPage extends NavigationPage {
   }
 }
 
+/*
+ * The styles for this page
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,

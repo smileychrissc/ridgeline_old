@@ -13,19 +13,28 @@ import { StyleSheet, Text } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class LockNamePage extends NavigationPage {
+/*
+ * Page for naming a lock
+ */
+export class LockNamePage extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage>
         <View style={styles.container}>
           <Text style={styles.prompt}>Enter an optional name for this lock</Text>
-          <TextInput style={styles.name} placeholder="Lock name" />
+          <TextInput style={styles.name} placeholder="Lock name" onChangeText={this.props.update} />
         </View>
       </NavigationPage>
     );
   }
 }
 
+/*
+ * Styles for this page
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
