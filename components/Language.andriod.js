@@ -12,7 +12,7 @@ import React from 'react';
 
 import { NativeModules } from 'react-native';
 
-import { LanguageStrings } from './components/LanguageStrings.js';
+import { LanguageStrings } from './LanguageStrings.js';
 
 /*
  * Class that returns language for Andriod OS

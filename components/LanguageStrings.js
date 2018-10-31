@@ -72,7 +72,9 @@ export class LanguageStrings {
   }
 }
 
+const en_US = require('../assets/lang/en_US');
+
 const strings = [
   // This is the default language and always needs to be defined
-  'en_US': require('./lang/en_US'),
+  'en_US': en_US,
 ]

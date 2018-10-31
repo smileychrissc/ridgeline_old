@@ -13,7 +13,7 @@ import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
 import { AsyncStorage } from 'react-native';
 
 import { WelcomeText } from './components/WelcomeText.js';
-import { Language } from './components/Lanugage.js';
+import { Language } from './components/Language';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
 import { LocksNearbyText } from './components/LocksNearbyText.js';
 import { WifiLocks } from './components/WifiLocks.js';
@@ -73,7 +73,7 @@ export default class App extends React.Component {
     // Get the language from the system and then look for a stored setting
     // This may cause a UI change if the promises aren't executed immediately in
     // future.
-    getLanguageAndStrings();
+    this.getLanguageAndStrings();
     
     // Check if there is a nickname registered
     this.fromKey('nickname')
@@ -116,7 +116,7 @@ export default class App extends React.Component {
             language = this.state.language;
           }
           Language.getStrings(language || DEFAULT_LANGUAGE,
-                              (language, strings) => this.setState(language, strings););
+                              (language, strings) => this.setState(language, strings));
         })
       .catch((error) => {/*TODO: handle error*/});
   }
