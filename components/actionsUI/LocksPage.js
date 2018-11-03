@@ -13,17 +13,24 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Displays the names of the locks
+ */
 export class LocksPage extends React.Component {
+  /*
+   * Initialize instance
+   */
   constructor(props) {
     super(props);
     
+    // Get the lock names
     let locks = [];
     if (typeof props.locks == "function") {
       let curLocks = props.locks();
       
       curLocks.forEach((lock, index) => {
-        if (typeof lock.nickname == "string") {
-          locks.push(lock.nickname);
+        if (typeof lock.name == "string") {
+          locks.push(lock.name);
         } else if (typeof lock.code == "string" ){
           locks.push(lock.code);
         } else {
@@ -31,10 +38,14 @@ export class LocksPage extends React.Component {
         }
       });
     }
+    
     this.state = {
       locks,
     };
   }
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage>
@@ -47,6 +58,9 @@ export class LocksPage extends React.Component {
   }
 }
 
+/*
+ * The styles for this page
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,

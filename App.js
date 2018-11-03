@@ -17,7 +17,7 @@ import { WelcomeText } from './components/WelcomeText.js';
 import { Language } from './components/Language';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
 import { LocksNearbyText } from './components/LocksNearbyText.js';
-import { WifiLocks } from './components/WifiLocks.js';
+import { BluetoothLocks } from './components/BluetoothLocks.js';
 
 import { Unlock } from './components/actionsUI/Unlock.js';
 import { NewLock } from './components/actionsUI/NewLock.js';
@@ -58,11 +58,12 @@ export default class App extends React.Component {
       newUser: true,         // Convenience flag for first time user
       nickname: undefined,   // The user's nickname
       deviceInfo: undefined, // Information on device we're running on
-      activeLock: undefined, // The lock we're currently working on
+      activeLock: undefined, // The nearby lock we're currently working on
       lockCount: 0,          // Convenience variable for number of registered locks
       locks: undefined,      // Array of lock information
       locksNearbyCount: 0,   // Convenience variable for number of detected registered locks
       locksNearby: undefined,// Array of registered locks detected to be nearby
+      locksNearbyAreLocked: false,//Flag for indicating at least one nearby lock is locked
       locksNearbyChecking: false, // Flags when we're looking for nearby locks
       modalName: undefined,  // The current modal window to show
       language: undefined,   // The current language
@@ -76,8 +77,13 @@ export default class App extends React.Component {
     this.cancelFingerprint = this.cancelFingerprint.bind(this);
     this.captureFingerprint = this.captureFingerprint.bind(this);
     this.findLocks = this.findLocks.bind(this);
+    this.forgetLock = this.forgetLock.bind(this);
+    this.getLocks = this.getLocks.bind(this);
     this.newFingerprint = this.newFingerprint.bind(this);
     this.newLockRegister = this.newLockRegister.bind(this);
+    this.onPressUnlock = this.onPressUnlock.bind(this);
+    this.resetLock = this.resetLock.bind(this);
+    this.unlock = this.unlock.bind(this);
 
     // Get the language from the system and then look for a stored setting
     // This may cause a UI change if the promises aren't executed immediately in
@@ -190,17 +196,30 @@ export default class App extends React.Component {
     }
     
     // Find any nearby locks that are registered
-    WifiLocks.find(this.state.locks)
-      .then((found) => {if (Array.isArray(found)) {
+    BluetoothLocks.find(this.state.locks)
+      .then((found) => {
+              if (Array.isArray(found)) {
+                // Check if we found any locked locks
+                let haveLockedLocks = false;
+                for (let ii = 0; ii < found.size; ii++) {
+                  if (!lock.unlocked) {
+                    haveLockedLocks = true;
+                    break;
+                  }
+                }
+                // Update our state
                 this.setState({'locksNearbyCount': found.size,
                                'locksNearby': found,
-                               'locksNearbyChecking': false
+                               'locksNearbyChecking': false,
+                               'locksNearbyAreLocked': haveLockedLocks,
                               });
               } else {
+                // Nothing nearby. Update the state
                 if (this.state.locksNearbyCount)
                   this.setState({'locksNearbyCount': 0,
                                  'locksNearby': undefined,
-                                 'locksNearbyChecking': false
+                                 'locksNearbyChecking': false,
+                                 'locksNearbyAreLocked': false,
                                 });
               }
             })
@@ -210,16 +229,42 @@ export default class App extends React.Component {
       });
   }
   /*
+   * Returns the array of known locks
+   */
+  getLocks() {
+    return this.state.locks;
+  }
+  /*
+   * Used to cancel any modal window shown
+   */
+  cancelModal() {
+    if (this.state.modalName)
+      this.setState({modalName: undefined});
+  }
+  /*
    * Updates the user's nickname in the store
    */
   updateNickname(nickname: string) {
     this.setKey('nickname', nickname);
   }
   /*
-   * Used to cancel any modal window shown
+   * Makes the identified lock the active lock
    */
-  cancelModal() {
-    this.setState({modalName: undefined});
+  updateActiveLock(lockID: string) {
+    let activeLock = undefined;
+    
+    for (let ii = 0; ii < this.state.locksNearby.size; ii++) {
+      if (this.state.locksNearby[ii].lockID.equals(lockID)) {
+        activeLock = ii;
+        break;
+      }
+    }
+    
+    if (active == undefined) {
+      // TODO: shouldn't happen, handle error
+    }
+    
+    this.setState({activeLock});
   }
   /*
    * Used to register a new lock on this device
@@ -238,18 +283,21 @@ export default class App extends React.Component {
     // TODO: Make sure we're not registering a lock twice
     
     // If the lock is still nearby, we bind it and our device
-    if (WifiLocks.confirmNearby(lockInfo.lockID)) {
+    if (BluetoothLocks.confirmNearby(lockInfo.lockID)) {
       let locks = this.state.locks;
+      let nearby = this.state.locksNearby;
       let passcode = lockInfo.passcode || '';
-      WifiLocks.bindToDevice(lockInfo.lockID, lockInfo.name, passcode)
+      BluetoothLocks.bindToDevice(lockInfo.lockID, lockInfo.name, passcode)
         .then((lock) => {locks.push(lock);
+                         nearby.push(lock);
                          newState.lockCount = locks.size;
                          newState.locks = locks;
-                         newState.activeLock = lock.size - 1;
+                         newState.locksNearby = nearby;
+                         newState.activeLock = nearby.size - 1;
  
                          setTimer(() => {
                               this.setState({modalName: NEW_FINGERPRINT_MODAL});
-                              WifiLocks.beginFingerprintCapture(lockInfo.lockID);
+                              BluetoothLocks.beginFingerprintCapture(lockInfo.lockID);
                             }, Config.newLockFingerprintDelayMs);
               
                          // TODO: Store our updated locks
@@ -269,47 +317,97 @@ export default class App extends React.Component {
    * lockID - the ID of the lock to capture a fingerprint on
    * cb - callback function for when a capture is done
    */
-  captureFingerprint(lockID: string, cb: function) {
-    cb(WifiLocks.captureFingerprint(lockID));
+  captureFingerprint(lockID: string, cb) {
+    cb(BluetoothLocks.captureFingerprint(lockID));
   }
   /*
    * Indicates that we're updated a fingerprint on the device
    * lockID - the ID of the lock to capture a fingerprint on
    */
   newFingerprint(lockID: string) {
-    WifiLocks.keepFingerprint(lockID);
+    BluetoothLocks.keepFingerprint(lockID);
   
     if (this.state.modalName)
       this.setState({modalName: undefined});
     
-    if (this.state.activeLock == undefined) {
-      // TODO: Report error
-      return;
-    }
-    if ((this.state.activeLock < 0) || (this.state.activeLock >= this.state.locks.size)) {
-      // TODO: Report error
-      return;
-    }
+    this.updateActiveLock(lockID);
   }
   /*
    * Cancel the fingerprint capturing discarding the new fingerprint
    * lockID - the ID of the lock to capture a fingerprint on
    */
   cancelFingerprint(lockID: string) {
-    WifiLocks.cancelFingerprintCapture(lockID);
-  
-    if (this.state.modalName)
-      this.setState({modalName: undefined});
+    BluetoothLocks.cancelFingerprintCapture(lockID);
+    this.cancelModal();
   }
-  
-  unlock() {
+  /*
+   * Unlocks a lock that's locked
+   */
+  unlock(lockID: string, passcode: string) {
     // Unlock the lock
+    // TODO: handle errors
+    BluetoothLocks.unlock(lockID, passcode);
+    
+    // Make this lock the active lock
+    this.updateActiveLock(lockID);
   }
-
+  /*
+   * Resets a lock back to a clean slate
+   */
+  resetLock(lockID: string, passcode: string) {
+    // Reset the lock
+    // TODO: handle errors
+    BluetoothLocks.resetLock(lockID, passcode);
+    
+    setTimeout(() => this.setState({modalName: undefined}), 1000);
+  }
+  /*
+   * Removes the lock from our list of known locks
+   */
+  forgetLock(lockID: string) {
+    // TODO: what do we do if the user if removing a lock that's nearby?
+    let index = undefined;
+    for (let ii = 0; ii < this.state.locks.size; ii++) {
+      if (this.state.locks[ii].lockID.equals(lockID)) {
+        index = ii;
+        break;
+      }
+    }
+    if (index != undefined) {
+      let locks = this.state.locks.splice(index, 1);
+      
+      // Save updated locks
+      this.setState({locks});
+    }
+    
+    // Look for nearby locks
+    index = undefined;
+    for (let ii = 0; ii < this.state.locksNearby.size; ii++) {
+      if (this.state.locksNearby[ii].lockID.equals(lockID)) {
+        index = ii;
+        break;
+      }
+    }
+    
+    if (index != undefined) {
+      let locks = this.state.locksNearby.splice(index, 1);
+      this.setState({locksNearby});
+    }
+  }
+  /*
+   * Handle the user wanting to unlock using their phone
+   */
   onPressUnlock() {
+    // Get a list of registered locks that are locked
+    let lockIDs = '';
+    if (Array.isArray(this.state.locks)) {
+      this.state.locks.forEach((lock) => {if (!lock.unlocked) lockIDs += ',' + lock.lockID});
+      lockIDs = lockIDs.substr(1);
+    }
+    this.lockIDs = lockIDs;
+
     this.setState({modalName: UNLOCK_MODAL});
   }
-  
   /*
    * Handle the user wanting to add a new lock
    */
@@ -317,8 +415,8 @@ export default class App extends React.Component {
   {
     // Get a list of registered locks so that we don't re-add an existing lock
     let lockIDs = '';
-    if (Array.isArray(locks)) {
-      locks.forEach((val) => {lockIDs += ',' + val.lockID});
+    if (Array.isArray(this.state.locks)) {
+      this.state.locks.forEach((lock) => {lockIDs += ',' + lock.lockID});
       lockIDs = lockIDs.substr(1);
     }
     this.lockIDs = lockIDs;
@@ -326,15 +424,19 @@ export default class App extends React.Component {
     // Begin the new lock process
     this.setState({modalName: NEW_LOCK_MODAL});
   }
-  
+  /*
+   * Handles the user wanting to remember a location
+   */
   onPressRemember()
   {
-    // TODO: Get location
+    // TODO: Get location and active lock and store multiple lock entries
     let loc = "this is my location";
     this.setKey('location',loc);
     this.setState({modalName: LOCATION_MODAL});
   }
-  
+  /*
+   * Show the saved location on a map
+   */
   onPressGoto() {
     let loc = this.getKey('location');
     if (loc) {
@@ -343,16 +445,36 @@ export default class App extends React.Component {
       this.setState({modalName: GOTO_FAILED_MODAL});
     }
   }
-  
+  /*
+   * The user wants to manage their locks
+   */
   onPressManage() {
     this.setState({modalName: MANAGE_MODAL});
   }
-  
+  /*
+   * The user is resetting a lock
+   */
   onPressResetLock() {
+    // Get a list of nearby locks
+    let lockIDs = '';
+    if (Array.isArray(this.state.locks)) {
+      this.state.locksNearby.forEach((lock) => {lockIDs += ',' + locksNearby.lockID});
+      lockIDs = lockIDs.substr(1);
+    }
+    this.lockIDs = lockIDs;
+
     this.setState({modalName: RESET_MODAL});
   }
   
   onPressForgetLock() {
+    // Get a list of registered locks
+    let lockIDs = '';
+    if (Array.isArray(this.state.locks)) {
+      this.state.locks.forEach((lock) => {lockIDs += ',' + lock.lockID});
+      lockIDs = lockIDs.substr(1);
+    }
+    this.lockIDs = lockIDs;
+
     this.setState({modalName: FORGET_MODAL});
   }
   
@@ -386,14 +508,15 @@ export default class App extends React.Component {
             this.state.locksNearbyChecking &&
               (<View style={styles.containerNearbyCheck}>
                 <ActivityIndicator size="small" color='#b0b0b0' />
-                <Text style={styles.nearbyCheckingText}>Looking for locks</Text>
+                <Text style={styles.nearbyCheckingText}>{this.state.strings.status.lockSearching}</Text>
               </View>)
           }
           {
-            this.state.locksNearbyCount && <Unlock title="Unlock"
-                                     accessibilityLabel="Unlock the closed lock"
-                                     onPress={this.onPressUnlock.bind(this)}
-                                     />
+            this.state.locksNearbyCount && this.state.locksNearbyAreLocked &&
+                <Unlock title="Unlock"
+                        accessibilityLabel="Unlock the closed lock"
+                        onPress={this.onPressUnlock}
+                        />
            }
           <NewLock title="New Lock!"
             accessibilityLabel="Prepare your new lock"
@@ -402,16 +525,18 @@ export default class App extends React.Component {
         </View>
         <View>
           {
-            this.state.locksNearbyCount && <Button title="Remember Location"
-              accessibilityLabel="Save the current location of this lock"
-              onPress={this.onPressRemember.bind(this)}
-              />
+            this.state.locksNearbyCount &&
+                <Button title="Remember Location"
+                  accessibilityLabel="Save the current location of this lock"
+                  onPress={this.onPressRemember.bind(this)}
+                  />
           }
           {
-            this.state.lockCount && <Button title="Goto Lock Location"
-              accessibilityLabel="Show me the last known location of this lock"
-              onPress={this.onPressGoto.bind(this)}
-              />
+            this.state.lockCount &&
+                <Button title="Goto Lock Location"
+                  accessibilityLabel="Show me the last known location of this lock"
+                  onPress={this.onPressGoto.bind(this)}
+                  />
           }
         </View>
         <View>
@@ -434,7 +559,7 @@ export default class App extends React.Component {
                                      />
           }
         </View>
-        <View>
+        <View style={styles.containerFooter}>
           <Button title="Settings"
             accessibilityLabel="Configure location auto saving and other features"
             onPress={this.onPressSettings.bind(this)}
@@ -455,25 +580,26 @@ export default class App extends React.Component {
         {
          (this.state.modalName == NEW_LOCK_MODAL) &&
              <NewLockModal nickname={this.state.nickname}
-                           lockIDs={this.state.lockIDs}
+                           lockIDs={this.lockIDs}
                            update={this.newLockRegister}
                            cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == NEW_FINGERPRINT_MODAL) &&
-              <NewFingerprintModal lockID={this.state.locks[this.state.activeLock].lockID}
+              <NewFingerprintModal lockID={this.state.locksNearby[this.state.activeLock].lockID}
                                    capture={this.captureFingerprint}
                                    update={this.newFingerprint}
                                    cancel={this.cancelFingerprint} />
         }
         {
           (this.state.modalName == UNLOCK_MODAL) &&
-              <UnlockModal lockID={this.state.locks[this.state.activeLock].lockID}
-                                   update={this.unlock.bind(this)} />
+              <UnlockModal lockIDs={this.lockIDs}
+                           update={this.unlock}
+                           cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == LOCATION_MODAL) &&
-              <LocationModal />
+              <LocationModal update={this.cancelModal} />
         }
         {
           (this.state.modalName == GOTO_FAILED_MODAL) &&
@@ -481,27 +607,31 @@ export default class App extends React.Component {
         }
         {
           (this.state.modalName == MANAGE_MODAL) &&
-              <ManageModal locks={this.getLocks.bind(this)} />
+              <ManageModal locks={this.getLocks} />
         }
         {
           (this.state.modalName == RESET_MODAL) &&
-              <ResetModal lockID={this.state.locks[this.state.activeLock].lockID} />
+              <ResetModal lockIDs={this.lockIDs}
+                          update={this.resetLock}
+                          cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == FORGET_MODAL) &&
-              <ForgetModal lockID={this.state.locks[this.state.activeLock].lockID} />
+              <ForgetModal lockIDs={this.lockIDs}
+                           update={this.forgetLock}
+                           cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == SETTINGS_MODAL) &&
-              <SettingsModal lockID={this.state.locks[this.state.activeLock].lockID} />
+              <SettingsModal lockIDs={this.lockIDs} cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == PROBLEM_MODAL) &&
-              <ProblemModal />
+              <ProblemModal cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == PRIVACY_MODAL) &&
-              <PrivacyModal />
+              <PrivacyModal cancel={this.cancelModal} />
         }
       </View>
     );
@@ -525,5 +655,11 @@ const styles = StyleSheet.create({
     color: '#b0b0b0',
     fontSize: 12,
     marginLeft: 10
+  },
+  containerFooter: {
+    flexDirection: 'row',
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 });

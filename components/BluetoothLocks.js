@@ -10,7 +10,7 @@
  */
 import React from 'react';
 
-export class WifiLocks extends React.Component {
+export class BluetoothLocks extends React.Component {
 
   find(locks) {
     // Get the locks parameter into a common format
@@ -79,6 +79,14 @@ export class WifiLocks extends React.Component {
   }
   
   keepFingerprint(lockID: string) {
+  
+  }
+  
+  unlock(lockID: string, password: string) {
+  
+  }
+  
+  resetLock(lockID: string, password: string) {
   
   }
 }

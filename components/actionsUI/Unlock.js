@@ -11,7 +11,13 @@
 import React from 'react';
 import { Button, StyleSheet } from 'react-native';
 
+/*
+ * The UI control for unlocking locked locks
+ */
 export class Unlock extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
         <Button title={this.props.title}

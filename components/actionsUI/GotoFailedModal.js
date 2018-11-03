@@ -13,7 +13,13 @@ import { Modal, StyleSheet } from 'react-native';
 
 import { ConfirmPage } from './ConfirmPage.js';
 
+/*
+ * Displays a message when there isn't a stored location to go to
+ */
 export class GotoFailedModal extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
         <Modal
@@ -29,6 +35,9 @@ export class GotoFailedModal extends React.Component {
   };
 }
 
+/*
+ * Styles for this window
+ */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#a0a0a0',

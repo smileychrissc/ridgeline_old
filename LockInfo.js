@@ -25,6 +25,7 @@ export default class LockInfo {
         name,
         lockID,
         passcode,
+        unlocked: true,    // Assume all locks are unlocked
     };
     
     return info;

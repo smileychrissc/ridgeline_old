@@ -13,7 +13,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class PasscodePage extends NavigationPage {
+export class PasscodePage extends React.Component {
   render() {
     return (
       <NavigationPage>

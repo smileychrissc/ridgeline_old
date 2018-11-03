@@ -12,19 +12,87 @@ import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
 
 import { ConfirmPage } from './ConfirmPage.js';
+import { LockSelectPage } from './LockSelectPage.js';
+import { PasscodePage } from './PasscodePage.js';
 
+const RESET_SELECT_PAGE = 'reset.lock_select';
+const RESET_PASSCODE_PAGE = 'reset.passcode';
+const RESET_CONFIRM_PAGE = 'reset.confirm';
+
+const pages = [
+  RESET_SELECT_PAGE,
+  RESET_PASSCODE_PAGE,
+  RESET_CONFIRM_PAGE,
+];
+
+/*
+ * Handles the UI for resetting a lock
+ */
 export class ResetModal extends React.Component {
+  /*
+   * Initialize instance
+   */
   constructor(props) {
     super(props);
-    this.state = {message: "Continue to clear all information on the lock"};
+    
+    this.state = {
+      message: "Continue to clear all information on the lock",
+      curPage: 0,
+      passcode: undefined,
+      lockID: undefined,
+    };
+    
+    // Bind functions
+    this.nextPage = this.nextPage.bind(this);
+    this.prevPage = this.prevPage.bind(this);
+    this.setLock = this.setLock.bind(this);
+    this.setPasscode = this.setPasscode.bind(this);
   }
-  
+  /*
+   * Displays the previous page
+   */
+  prevPage() {
+    if (this.state.curPage > 0)
+      this.setState({curPage: this.state.curPage - 1});
+  }
+  /*
+   * Displays the next page
+   */
+  nextPage() {
+    if (this.state.curPage < pages.size - 1)
+      this.setState({curPage: this.state.curPage + 1});
+  }
+  /*
+   * Handles setting the lock ID
+   */
+  setLock(lockID: string) {
+    this.setState({lockID});
+  }
+  /*
+   * Handles settings the passcode
+   */
+  setPasscode(passcode: string) {
+    this.setState({passcode});
+  }
+  /*
+   * Handles wiping the lock
+   */
   wipeLock() {
-    // TODO: Wipe the lock
+    this.props.update(this.state.lockID, this.state.passcode);
+
     this.setState({message: "Lock has been cleared"});
   }
-  
+  /*
+   * The UI
+   */
   render() {
+    let curPage = this.state.curPage;
+    if (curPage < 0)
+      curPage = 0;
+    else if (curPage >= pages.size)
+      curPage = pages.size - 1;
+    
+    let pageName = pages[curPage];
     return (
         <Modal
           animationType='none'
@@ -33,12 +101,35 @@ export class ResetModal extends React.Component {
           presentationStyle='overFullScreen'
           style={styles.container}
         >
-          <ConfirmPage next={this.wipeLock.bind(this)} title={this.state.message} />
+          {
+            (pageName == RESET_SELECT_PAGE) &&
+                <LockSelectPage nextPage={this.nextPage}
+                                cancel={this.props.cancel}
+                                update={this.setLock}
+                                lockIDs={this.props.lockIDs}
+                                cancel={this.props.cancel} />
+          }
+          {
+            (pageName == RESET_PASSCODE_PAGE) &&
+                <PasscodePage prevPage={this.prevPage}
+                              nextPage={this.nextPage}
+                              update={this.setPasscode}
+                              cancel={this.props.cancel} />
+          }
+          {
+            (pageName == RESET_CONFIRM_PAGE) &&
+                <ConfirmPage prev={this.prevPage}
+                             next={this.wipeLock.bind(this)}
+                             title={this.state.message} />
+          }
         </Modal>
     );
   };
 }
 
+/*
+ * Styles for this window
+ */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#a0a0a0',

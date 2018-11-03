@@ -13,7 +13,13 @@ import { Modal, StyleSheet } from 'react-native';
 
 import { LocksPage } from './LocksPage.js';
 
+/*
+ * Allows the user to manage their locks
+ */
 export class ManageModal extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
         <Modal
@@ -29,6 +35,9 @@ export class ManageModal extends React.Component {
   };
 }
 
+/*
+ * The styles for this window
+ */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#a0a0a0',

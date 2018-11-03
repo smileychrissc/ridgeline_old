@@ -13,7 +13,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class ConfirmPage extends NavigationPage {
+export class ConfirmPage extends React.Component {
   render() {
     return (
       <NavigationPage>

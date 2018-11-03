@@ -27,7 +27,7 @@ export class NavigationButton extends React.Component {
                   <Text style={styles.pageButton}>{this.props.title}</Text>
             }
           </View>
-        <TouchableOpacity>
+        </TouchableOpacity>
       </View>
     );
   }

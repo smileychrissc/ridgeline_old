@@ -13,7 +13,13 @@ import { Modal, StyleSheet } from 'react-native';
 
 import { ConfirmPage } from './ConfirmPage.js';
 
+/*
+ * Shows that a location was saved
+ */
 export class LocationModal extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
         <Modal
@@ -29,6 +35,9 @@ export class LocationModal extends React.Component {
   };
 }
 
+/*
+ * Styles for this window
+ */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#e4ffe4',
