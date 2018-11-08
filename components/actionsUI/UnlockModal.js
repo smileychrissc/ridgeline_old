@@ -57,7 +57,7 @@ export class UnlockModule extends React.Component {
    * Shows the next page
    */
   nextPage() {
-    if (this.state.curPage < pages.size - 1)
+    if (this.state.curPage < pages.length - 1)
       this.setState({curPage: this.state.curPage + 1});
   }
   /*
@@ -96,10 +96,10 @@ export class UnlockModule extends React.Component {
   render() {
     let curPage = this.state.curPage;
     
-    if ((curPage < 0) || (curPage >= pages.size)) {
+    if ((curPage < 0) || (curPage >= pages.length)) {
       // TODO: Report error
       if (curPage < 0) curPage = 0;
-      if (curPage >= pages.size) curPage = pages.size - 1;
+      if (curPage >= pages.length) curPage = pages.length - 1;
     }
     
     let pageName = pages[curPage];

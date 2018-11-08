@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { FlatList, StyleSheet, Text } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
@@ -25,7 +25,7 @@ export class NicknamePage extends NavigationPage {
   
   render() {
     return (
-      <NavigationPage>
+      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
         {
           <FlatList data={this.state.locks}

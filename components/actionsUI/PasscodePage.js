@@ -9,14 +9,14 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
 export class PasscodePage extends React.Component {
   render() {
     return (
-      <NavigationPage>
+      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>Enter the lock password</Text>
           <TextInput style={styles.passcode} placeholder="Password" />

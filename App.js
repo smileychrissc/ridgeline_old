@@ -12,7 +12,7 @@ import React from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 import { AsyncStorage } from 'react-native';
 
-import { Config } from './Config.js';
+import Config from './Config.js';
 import { WelcomeText } from './components/WelcomeText.js';
 import { Language } from './components/Language';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
@@ -71,6 +71,7 @@ export default class App extends React.Component {
     };
     this.findLocksHandle = undefined;
     this.lockIDs = undefined;
+    this.lockComms = new BluetoothLocks();
     
     // Perform function bindings
     this.cancelModal = this.cancelModal.bind(this);
@@ -81,6 +82,7 @@ export default class App extends React.Component {
     this.getLocks = this.getLocks.bind(this);
     this.newFingerprint = this.newFingerprint.bind(this);
     this.newLockRegister = this.newLockRegister.bind(this);
+    this.newLockRegisterFinished = this.newLockRegisterFinished.bind(this);
     this.onPressUnlock = this.onPressUnlock.bind(this);
     this.resetLock = this.resetLock.bind(this);
     this.unlock = this.unlock.bind(this);
@@ -101,7 +103,7 @@ export default class App extends React.Component {
     // Load all configured locks
     this.fromKeyJSON('locks')
       .then((locks) => {if (Array.isArray(locks)) {
-                          this.setState({'lockCount': locks.size, 'locks': locks});
+                          this.setState({'lockCount': locks.length, 'locks': locks});
                           if (this.findLocksHandle) {
                             clearTimeout(this.findLocksHandle);
                             this.findLocksHandle = undefined;
@@ -196,19 +198,19 @@ export default class App extends React.Component {
     }
     
     // Find any nearby locks that are registered
-    BluetoothLocks.find(this.state.locks)
+    this.lockComms.find(this.state.locks)
       .then((found) => {
               if (Array.isArray(found)) {
                 // Check if we found any locked locks
                 let haveLockedLocks = false;
-                for (let ii = 0; ii < found.size; ii++) {
+                for (let ii = 0; ii < found.length; ii++) {
                   if (!lock.unlocked) {
                     haveLockedLocks = true;
                     break;
                   }
                 }
                 // Update our state
-                this.setState({'locksNearbyCount': found.size,
+                this.setState({'locksNearbyCount': found.length,
                                'locksNearby': found,
                                'locksNearbyChecking': false,
                                'locksNearbyAreLocked': haveLockedLocks,
@@ -253,7 +255,7 @@ export default class App extends React.Component {
   updateActiveLock(lockID: string) {
     let activeLock = undefined;
     
-    for (let ii = 0; ii < this.state.locksNearby.size; ii++) {
+    for (let ii = 0; ii < this.state.locksNearby.length; ii++) {
       if (this.state.locksNearby[ii].lockID.equals(lockID)) {
         activeLock = ii;
         break;
@@ -271,46 +273,50 @@ export default class App extends React.Component {
    * lockInfo - The user entered information on the new lock
    */
   newLockRegister(lockInfo) {
-    let newState = {};
-    
     // Update the user's nickname if they've added/changed one
     if (typeof lockInfo.nickname == 'string') {
       updateNickname(lockInfo.nickname);
-      newState.newUser = false;
-      newState.nickname = lockInfo.nickname;
+      this.setState({newUser: false, nickname: lockInfo.nickname});
     }
     
     // TODO: Make sure we're not registering a lock twice
     
     // If the lock is still nearby, we bind it and our device
-    if (BluetoothLocks.confirmNearby(lockInfo.lockID)) {
-      let locks = this.state.locks;
-      let nearby = this.state.locksNearby;
+    if (this.lockComms.confirmNearby(lockInfo.lockID)) {
+      var locks = this.state.locks || [];
+      var nearby = this.state.locksNearby || [];
+      var finishedFn = this.newLockRegisterFinished;
+      var stateUpdate = (s) => this.setState(s);
       let passcode = lockInfo.passcode || '';
-      BluetoothLocks.bindToDevice(lockInfo.lockID, lockInfo.name, passcode)
-        .then((lock) => {locks.push(lock);
+      
+      this.lockComms.bindToDevice(lockInfo.lockID, lockInfo.name, passcode)
+        .then((lock) => {
+                         locks.push(lock);
                          nearby.push(lock);
-                         newState.lockCount = locks.size;
-                         newState.locks = locks;
-                         newState.locksNearby = nearby;
-                         newState.activeLock = nearby.size - 1;
+              
+                         stateUpdate({lockCount: locks.length,
+                                      locks: locks,
+                                      locksNearby: nearby,
+                                      activeLock: nearby.length - 1});
  
-                         setTimer(() => {
-                              this.setState({modalName: NEW_FINGERPRINT_MODAL});
-                              BluetoothLocks.beginFingerprintCapture(lockInfo.lockID);
-                            }, Config.newLockFingerprintDelayMs);
+                         setTimeout(() => finishedFn(lockInfo.lockID),
+                                    Config.newLockFingerprintDelayMs);
               
                          // TODO: Store our updated locks
             })
-        .catch((error) => {/* TODO: handle error */});
+        .catch((error) => {console.log(error);/* TODO: handle error */});
     } else {
       // TODO: Handle error
     }
-    
-    // Update our state if we have something to update
-    if (newState.keys().size > 0) {
-      this.setState(newState);
-    }
+  }
+  /*
+   * Function to set begin the fingerprint registration after a new lock is registered
+   * lockID - the ID of the registered lock
+   */
+  newLockRegisterFinished(lockID) {
+    this.setState({modalName: NEW_FINGERPRINT_MODAL,
+                   fingerprintCancelMessage: "Cancelling leaves lock with no registered fingerprint"});
+    this.lockComms.beginFingerprintCapture(lockID);
   }
   /*
    * Cause the lock to capture a fingerprint
@@ -318,14 +324,14 @@ export default class App extends React.Component {
    * cb - callback function for when a capture is done
    */
   captureFingerprint(lockID: string, cb) {
-    cb(BluetoothLocks.captureFingerprint(lockID));
+    cb(this.lockComms.captureFingerprint(lockID));
   }
   /*
    * Indicates that we're updated a fingerprint on the device
    * lockID - the ID of the lock to capture a fingerprint on
    */
   newFingerprint(lockID: string) {
-    BluetoothLocks.keepFingerprint(lockID);
+    this.lockComms.keepFingerprint(lockID);
   
     if (this.state.modalName)
       this.setState({modalName: undefined});
@@ -337,7 +343,7 @@ export default class App extends React.Component {
    * lockID - the ID of the lock to capture a fingerprint on
    */
   cancelFingerprint(lockID: string) {
-    BluetoothLocks.cancelFingerprintCapture(lockID);
+    this.lockComms.cancelFingerprintCapture(lockID);
     this.cancelModal();
   }
   /*
@@ -346,7 +352,7 @@ export default class App extends React.Component {
   unlock(lockID: string, passcode: string) {
     // Unlock the lock
     // TODO: handle errors
-    BluetoothLocks.unlock(lockID, passcode);
+    this.lockComms.unlock(lockID, passcode);
     
     // Make this lock the active lock
     this.updateActiveLock(lockID);
@@ -357,7 +363,7 @@ export default class App extends React.Component {
   resetLock(lockID: string, passcode: string) {
     // Reset the lock
     // TODO: handle errors
-    BluetoothLocks.resetLock(lockID, passcode);
+    this.lockComms.resetLock(lockID, passcode);
     
     setTimeout(() => this.setState({modalName: undefined}), 1000);
   }
@@ -365,9 +371,14 @@ export default class App extends React.Component {
    * Removes the lock from our list of known locks
    */
   forgetLock(lockID: string) {
-    // TODO: what do we do if the user if removing a lock that's nearby?
+    // TODO: what do we do if the user if removing a lock that's nearby? (not cleared yet)
     let index = undefined;
-    for (let ii = 0; ii < this.state.locks.size; ii++) {
+    if (!Array.isArray(this.state.locks)) {
+      // TODO: Report error
+      return;
+    }
+    
+    for (let ii = 0; ii < this.state.locks.length; ii++) {
       if (this.state.locks[ii].lockID.equals(lockID)) {
         index = ii;
         break;
@@ -381,17 +392,19 @@ export default class App extends React.Component {
     }
     
     // Look for nearby locks
-    index = undefined;
-    for (let ii = 0; ii < this.state.locksNearby.size; ii++) {
-      if (this.state.locksNearby[ii].lockID.equals(lockID)) {
-        index = ii;
-        break;
+    if (Array.isArray(this.state.locksNearby)) {
+      index = undefined;
+      for (let ii = 0; ii < this.state.locksNearby.length; ii++) {
+        if (this.state.locksNearby[ii].lockID.equals(lockID)) {
+          index = ii;
+          break;
+        }
       }
-    }
     
-    if (index != undefined) {
-      let locks = this.state.locksNearby.splice(index, 1);
-      this.setState({locksNearby});
+      if (index != undefined) {
+        let locks = this.state.locksNearby.splice(index, 1);
+        this.setState({locksNearby});
+      }
     }
   }
   /*
@@ -582,14 +595,17 @@ export default class App extends React.Component {
              <NewLockModal nickname={this.state.nickname}
                            lockIDs={this.lockIDs}
                            update={this.newLockRegister}
-                           cancel={this.cancelModal} />
+                           cancel={this.cancelModal}
+                           />
         }
         {
           (this.state.modalName == NEW_FINGERPRINT_MODAL) &&
               <NewFingerprintModal lockID={this.state.locksNearby[this.state.activeLock].lockID}
                                    capture={this.captureFingerprint}
                                    update={this.newFingerprint}
-                                   cancel={this.cancelFingerprint} />
+                                   cancel={this.cancelFingerprint}
+                                   cancelMessage={this.state.fingerprintCancelMessage}
+                                    />
         }
         {
           (this.state.modalName == UNLOCK_MODAL) &&

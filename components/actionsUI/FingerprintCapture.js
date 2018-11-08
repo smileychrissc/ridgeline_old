@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 export class FingerprintCapture extends React.Component {
   render() {
@@ -18,13 +18,13 @@ export class FingerprintCapture extends React.Component {
     return (
     <View>
       {
-        this.props.prompt && <Text style={styles.prompt} >this.props.prompt</Text>
+        this.props.prompt && <Text style={styles.prompt} >{this.props.prompt}</Text>
       }
       {
         !this.props.captured &&
           (<View>
             <Text style={styles.instructions} >{instructions}</Text>
-            <ActivityIndicator size="medium" color='#505050' />
+            <ActivityIndicator size='small' color='#505050' />
            </View>)
       }
       {

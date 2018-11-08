@@ -9,11 +9,12 @@
  * are prohibited.
  */
 import React from 'react';
-import { Modal, StyleSheet, View } from 'react-native';
+import { Modal, StyleSheet } from 'react-native';
 
-import { Config } from '../../Config.js';
+import Config from '../../Config.js';
 
 import { FingerprintCapturePage } from './FingerprintCapturePage.js';
+import { YesNoCancelModal } from './YesNoCancelModal.js';
 
 /*
  * Fingerprint capturing UI
@@ -25,11 +26,19 @@ export class NewFingerprintModal extends React.Component {
   constructor(props) {
     super(props);
     
+    let cancelMessage = this.props.cancelMessage ||
+                                 "Are you sure you want to cancel registering a print";
+    
     this.state = {
-      captured: 0
+      captured: 0,
+      confirmCancel: false,
+      cancelMessage
     };
     
-    this.haveFingerprint.bind(this);
+    this.abandonCancel = this.abandonCancel.bind(this);
+    this.confirmCancel = this.confirmCancel.bind(this);
+    this.haveFingerprint = this.haveFingerprint.bind(this);
+    this.performCancel = this.performCancel.bind(this);
   }
   /*
    * Begin capturing fingerprints
@@ -52,11 +61,28 @@ export class NewFingerprintModal extends React.Component {
     }
   }
   /*
+   * Function used to confirm the user wants to cancel
+   */
+  confirmCancel() {
+    this.setState({confirmCancel: true});
+  }
+  /*
+   * Called when the user really wants to cancel
+   */
+  performCancel() {
+    this.props.cancel(this.props.lockID);
+  }
+  /*
+   * Called when the user doesn't really want to cancel fingerprint capture
+   */
+  abandonCancel() {
+    this.setState({confirmCancel: false});
+  }
+  /*
    * UI rendering function
    */
   render() {
-    let cancel = this.state.captured < Config.fingerprintCaptureCount ?
-                         () => {this.props.cancel(this.props.lockID)} : undefined;
+    let cancel = this.state.captured < Config.fingerprintCaptureCount ? this.confirmCancel : undefined;
     let next = this.state.captured >= Config.fingerprintCaptureCount ?
                          () => {this.props.update(this.props.lockID)} : undefined;
     return (
@@ -71,6 +97,12 @@ export class NewFingerprintModal extends React.Component {
                                 fingerprints={Config.fingerprintCaptureCount}
                                 next={next}
                                 cancel={cancel} />
+        {
+          (this.state.confirmCancel) &&
+            <YesNoCancelModal message={this.state.cancelMessage}
+                              yes={this.performCancel}
+                              no={this.abandonCancel} />
+        }
       </Modal>
     );
   }

@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { FingerprintCapture } from './FingerprintCapture.js';
 import { NavigationPage } from './NavigationPage.js';
@@ -24,7 +24,7 @@ export class FingerprintCapturePage extends React.Component {
     let instructions = (this.props.captured == 0) ?
                             'Place finger on sensor' : 'Place same finger on sensor again';
     return (
-      <NavigationPage>
+      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <FingerprintCapture prompt={prompt}
                          instructions={instructions} />
       </NavigationPage>

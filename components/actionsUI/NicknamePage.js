@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
@@ -22,7 +22,7 @@ export class NicknamePage extends React.Component {
    */
   render() {
     return (
-      <NavigationPage>
+      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>Enter your nickname</Text>
           <TextInput style={styles.nickname} placeholder="Your nickname" onChangeText={this.props.update}/>

@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
@@ -45,7 +45,7 @@ export class LockPasscodePage extends React.Component {
    * Checks the passcodes are the same before allowing the user to continue
    */
   checkPassword() {
-    if (this.state.pw1.equals(this.state.pw2)) {
+    if (this.state.pw1 == this.state.pw2) {
       this.props.next(this.state.pw1);
     }
     this.setState({error: 'Passwords need to match'});
@@ -59,16 +59,16 @@ export class LockPasscodePage extends React.Component {
     // get a few characters in)
     let style1 = styles.passcode;
     let style2 = styles.passcode;
-    if (this.state.pw1.equals(this.state.pw2)) {
-      style1 = passcodeMatch;
-      style2 = passcodeMatch;
-    } else if (this.state.pw2 && !this.state.pw1.equals(this.state.pw2) &&
+    if (this.state.pw1 == this.state.pw2) {
+      style1 = styles.passcodeMatch;
+      style2 = styles.passcodeMatch;
+    } else if (this.state.pw2 && (this.state.pw1 != this.state.pw2) &&
         ((this.state.pw2.length >= this.state.pw1.length) || (this.state.pw2.length > 3))) {
       style2 = styles.passcodeMismatch;
     }
     
     return (
-      <NavigationPage next={this.checkPasswords}>
+      <NavigationPage next={this.checkPassword} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>Enter an optional password for this lock</Text>
           <TextInput style={style1}
@@ -103,18 +103,21 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   passcode: {
+    width:140,
   },
   passcodeMismatch: {
     borderColor: 'red',
-    borderWidth: 1
+    borderWidth: 1,
+    width:140,
   },
   passcodeMatch: {
     borderColor: 'green',
-    borderWidth: 1
+    borderWidth: 1,
+    width:140,
   },
   errorMessage: {
     fontSize: 18,
     fontStyle: 'normal',
-    color: 'red'
+    color: 'red',
   }
 });

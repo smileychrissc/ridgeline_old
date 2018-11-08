@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
@@ -22,7 +22,7 @@ export class LockNamePage extends React.Component {
    */
   render() {
     return (
-      <NavigationPage>
+      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>Enter an optional name for this lock</Text>
           <TextInput style={styles.name} placeholder="Lock name" onChangeText={this.props.update} />

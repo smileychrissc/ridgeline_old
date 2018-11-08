@@ -11,7 +11,7 @@
 import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
 
-import { LockInfo } from '../../LockInfo.js';
+import LockInfo from '../../LockInfo.js';
 
 import { NicknamePage } from './NicknamePage.js';
 import { LockCodePage } from './LockCodePage.js';
@@ -29,7 +29,7 @@ const NEW_LOCK_FINISH_PAGE = 'lock.newFinish';
 /*
  * Ordered list of pages to show
  */
-const page = [
+const pages = [
   NICKNAME_PAGE,
   LOCK_CODE_PAGE,
   LOCK_NAME_PAGE,
@@ -81,7 +81,7 @@ export class NewLockModal extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     // Only update if we have a new page
     return (
-            (this.state.nextPage != nextState.nextPage) ||
+            (this.state.curPage != nextState.curPage) ||
             (this.state.finished != nextState.finished)
            );
   }
@@ -100,7 +100,7 @@ export class NewLockModal extends React.Component {
   nextPage() {
     let curPage = this.state.curPage;
 
-    if (curPage < pages.size - 1)
+    if (curPage < pages.length - 1)
       this.setState({curPage: curPage + 1});
   }
   /*
@@ -116,7 +116,7 @@ export class NewLockModal extends React.Component {
       newLockInfo.nickname = this.state.nickname;
 
     // Delay the update of the lock info so that the UI has a chance to update
-    setTimer(() => {
+    setTimeout(() => {
         this.props.update(newLockInfo);
     
         this.setState({finished: true});
@@ -156,10 +156,10 @@ export class NewLockModal extends React.Component {
   render() {
     let curPage = this.state.curPage;
     
-    if ((curPage < 0) || (curPage >= pages.size)) {
+    if ((curPage < 0) || (curPage >= pages.length)) {
       // TODO: Report error
       if (curPage < 0) curPage = 0;
-      if (curPage >= pages.size) curPage = pages.size - 1;
+      if (curPage >= pages.length) curPage = pages.length - 1;
     }
     
     let pageName = pages[curPage];
@@ -173,7 +173,9 @@ export class NewLockModal extends React.Component {
         >
           {
             (pageName == NICKNAME_PAGE) &&
-                <NicknamePage next={this.nextPage} update={this.updateNickname} />
+                <NicknamePage next={this.nextPage}
+                              update={this.updateNickname}
+                              cancel={this.props.cancel} />
           }
           {
             (pageName == LOCK_CODE_PAGE) &&
@@ -200,7 +202,8 @@ export class NewLockModal extends React.Component {
           {
             (pageName == NEW_LOCK_FINISH_PAGE) &&
                 <NewLockFinishPage prev={this.prevPage}
-                                   finished={this.state.finished} />
+                                   finished={this.state.finished}
+                                   cancel={this.props.cancel} />
           }
         </Modal>
     );

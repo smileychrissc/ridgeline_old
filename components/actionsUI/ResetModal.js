@@ -59,7 +59,7 @@ export class ResetModal extends React.Component {
    * Displays the next page
    */
   nextPage() {
-    if (this.state.curPage < pages.size - 1)
+    if (this.state.curPage < pages.length - 1)
       this.setState({curPage: this.state.curPage + 1});
   }
   /*
@@ -89,8 +89,8 @@ export class ResetModal extends React.Component {
     let curPage = this.state.curPage;
     if (curPage < 0)
       curPage = 0;
-    else if (curPage >= pages.size)
-      curPage = pages.size - 1;
+    else if (curPage >= pages.length)
+      curPage = pages.length - 1;
     
     let pageName = pages[curPage];
     return (

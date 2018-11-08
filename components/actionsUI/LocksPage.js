@@ -48,7 +48,7 @@ export class LocksPage extends React.Component {
    */
   render() {
     return (
-      <NavigationPage>
+      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <FlatList data={this.state.locks}
                     render={({item}) => <Text style={styles.lockList}>{item}</Text>} />
