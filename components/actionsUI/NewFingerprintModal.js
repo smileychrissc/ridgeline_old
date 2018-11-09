@@ -93,10 +93,13 @@ export class NewFingerprintModal extends React.Component {
         presentationStyle='overFullScreen'
         style={styles.newFingerprintModal}
       >
-        <FingerprintCapturePage captured={this.state.captured}
+        {
+          (!this.state.confirmCancel) &&
+            <FingerprintCapturePage captured={this.state.captured}
                                 fingerprints={Config.fingerprintCaptureCount}
                                 next={next}
                                 cancel={cancel} />
+        }
         {
           (this.state.confirmCancel) &&
             <YesNoCancelModal message={this.state.cancelMessage}

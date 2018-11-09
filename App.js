@@ -315,7 +315,7 @@ export default class App extends React.Component {
    */
   newLockRegisterFinished(lockID) {
     this.setState({modalName: NEW_FINGERPRINT_MODAL,
-                   fingerprintCancelMessage: "Cancelling leaves lock with no registered fingerprint"});
+                   fingerprintCancelMessage: "Continuing leaves lock with no registered fingerprints"});
     this.lockComms.beginFingerprintCapture(lockID);
   }
   /*

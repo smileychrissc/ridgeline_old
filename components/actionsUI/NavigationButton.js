@@ -16,7 +16,7 @@ export class NavigationButton extends React.Component {
     return (
       <View>
         <TouchableOpacity onPress={this.props.action}>
-          <View>
+          <View style={styles.button} >
             {
               this.props.title && this.props.direction && (this.props.direction == 'left') &&
                   <Text style={styles.pageButton}>{this.props.title}</Text>
@@ -39,5 +39,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'normal',
     fontStyle: 'normal',
-  }
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

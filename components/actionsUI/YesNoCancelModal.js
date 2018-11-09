@@ -9,7 +9,7 @@
  * are prohibited.
  */
 import React from 'react';
-import { Modal, StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
 import { NavigationButton } from './NavigationButton.js';
 
@@ -23,7 +23,7 @@ export class YesNoCancelModal extends React.Component {
   constructor(props) {
     super(props);
     
-    let cancelMessage = this.props.cancelMessage || "Do you want to continue";
+    let cancelMessage = this.props.message || "Do you want to continue";
     
     this.state = {
       cancelMessage
@@ -34,37 +34,35 @@ export class YesNoCancelModal extends React.Component {
    */
   render() {
     return (
-      <Modal
-        animationType='none'
-        transparent={true}
-        visible={true}
-        presentationStyle='overFullScreen'
-        style={styles.yesNoCancelModal}
-      >
-      <View style={styles.topView} >
-        <Text style={styles.message}>{this.state.cancelMessage}</Text>
-        <View style={styles.buttonsView}>
-          {
-            this.props.yes &&
-                <NavigationButton title="Yes"
+        <View style={styles.topView} >
+          <Text style={styles.message}>{this.state.cancelMessage}</Text>
+          <View style={styles.buttonsView}>
+            {
+              this.props.yes &&
+                (<View style={styles.firstButton}>
+                  <NavigationButton
+                                  title="Yes"
                                   source={require('../../assets/next.gif')}
                                   action={this.props.yes} />
-          }
-          {
-            this.props.no &&
-                <NavigationButton title="No"
+                </View>)
+            }
+            {
+              this.props.no &&
+                  <NavigationButton title="No"
                                   source={require('../../assets/prev.gif')}
                                   action={this.props.no} />
-          }
-          {
-            this.props.cancel &&
-                <NavigationButton title="Cancel"
+            }
+            {
+              this.props.cancel &&
+                (<View style={styles.lastButton}>
+                  <NavigationButton
+                                  title="Cancel"
                                   source={require('../../assets/cancel.gif')}
                                   action={this.props.cancel} />
-          }
+                </View>)
+           }
+          </View>
         </View>
-      </View>
-      </Modal>
     );
   }
 }
@@ -73,9 +71,6 @@ export class YesNoCancelModal extends React.Component {
  * Styles for this modal
  */
 const styles = StyleSheet.create({
-  yesNoCancelModal: {
-    backgroundColor: '#ff8484',
-  },
   topView: {
     backgroundColor: '#e0e0e0',
     flex: 1,
@@ -83,13 +78,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonsView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   message: {
     fontSize: 18,
     fontWeight: "bold",
   },
-  buttonView: {
-    backgroundColor: '#e0e0e0',
-    flexDirection: 'row',
-    alignItems: 'center',
+  firstButton: {
+    marginRight: 20,
+  },
+  lastButton: {
+    marginLeft: 20,
   },
 });
