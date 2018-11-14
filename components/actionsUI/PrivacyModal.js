@@ -11,9 +11,16 @@
 import React from 'react';
 import { Modal, StyleSheet, WebView } from 'react-native';
 
+import Config from '../../Config.js';
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Privacy policy
+ */
 export class PrivacyModal extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
         <Modal
@@ -25,13 +32,16 @@ export class PrivacyModal extends React.Component {
         >
           <NavigationPage>
             <WebView style={styles.prompt}
-                     source={{uri: 'https://github.com/facebook/react-native'}} />
+                     source={{uri: Config.uri.privacyPolicy}} />
           </NavigationPage>
         </Modal>
     );
   };
 }
 
+/*
+ * Styles for the UI
+ */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#a0a0a0',

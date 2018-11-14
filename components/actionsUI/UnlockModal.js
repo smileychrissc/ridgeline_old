@@ -19,6 +19,9 @@ const UNLOCK_SELECT_PAGE = 'unlock.select';
 const UNLOCK_PASSCODE_PAGE = 'unlock.passcode';
 const UNLOCK_CONFIRM_PAGE = 'unlock.confirm';
 
+/*
+ * Pages we're displaying in the order of display
+ */
 let pages = [
   UNLOCK_SELECT_PAGE,
   UNLOCK_PASSCODE_PAGE,

@@ -10,6 +10,9 @@
  */
 import React from 'react';
 
+/*
+ * Bluetooth communications interface
+ */
 export class BluetoothLocks extends React.Component {
 
   find(locks) {

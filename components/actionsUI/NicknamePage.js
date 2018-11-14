@@ -35,6 +35,7 @@ export class NicknamePage extends React.Component {
         <View style={styles.container}>
           <Text style={styles.prompt}>{this.strings.prompt.enterNickname}</Text>
           <TextInput style={styles.nickname}
+                     autoFocus={true}
                      placeholder={this.strings.placeholder.nickname}
                      onChangeText={this.props.update}/>
         </View>
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   prompt: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 16,
     fontStyle: 'normal',
   },
@@ -63,5 +64,6 @@ const styles = StyleSheet.create({
     height: 25,
     marginTop: 10,
     borderWidth: 1,
+    borderColor: '#808080',
   },
 });

@@ -46,6 +46,9 @@ const PROBLEM_MODAL = 'lock.problem_modal';
 const PRIVACY_MODAL = 'lock.privacy_modal';
 
 const DEFAULT_LANGUAGE = 'en_US';
+
+const defaultStrings = Language.loadStrings(DEFAULT_LANGUAGE);
+
 /*
  * Main class
  */
@@ -67,7 +70,7 @@ export default class App extends React.Component {
       locksNearbyChecking: false, // Flags when we're looking for nearby locks
       modalName: undefined,  // The current modal window to show
       language: undefined,   // The current language
-      strings: undefined,    // The list of loaded strings
+      strings: defaultStrings,    // The list of loaded strings
     };
     this.findLocksHandle = undefined;
     this.lockIDs = undefined;
@@ -530,7 +533,7 @@ export default class App extends React.Component {
                         onPress={this.onPressUnlock}
                         />
            }
-          <NewLock title="New Lock!"
+          <NewLock title={this.state.strings.title.newLock}
             accessibilityLabel="Prepare your new lock"
             onPress={this.onPressNewLock.bind(this)}
             />
@@ -572,19 +575,19 @@ export default class App extends React.Component {
           }
         </View>
         <View style={styles.containerFooter}>
-          <Button title="Settings"
+          <Button title={this.state.strings.title.settings}
             accessibilityLabel="Configure location auto saving and other features"
             onPress={this.onPressSettings.bind(this)}
           />
-          <Button visible={false} title="Logs"
+          <Button visible={false} title={this.state.strings.title.logs}
             accessibilityLabel="View lock logs"
             onPress={this.onPressLogs.bind(this)}
           />
-          <Button title="Problems"
+          <Button title={this.state.strings.title.problems}
             accessibilityLabel="I'm having problems with my lock"
             onPress={this.onPressProblems.bind(this)}
           />
-          <Button title="Privacy"
+          <Button title={this.state.strings.title.privacy}
             accessibilityLabel="Our Privacy Policies"
             onPress={this.onPressPrivacy.bind(this)}
           />

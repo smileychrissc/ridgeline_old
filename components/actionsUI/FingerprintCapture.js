@@ -11,15 +11,25 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
+import { Language } from '../Language';
+
 /*
  * Basic interface for capturing fingerprints
  */
 export class FingerprintCapture extends React.Component {
   /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
+  /*
    * The UI
    */
   render() {
-    let instructions = this.props.instructions || 'Place finger on sensor to capture';
+    let instructions = this.props.instructions || this.strings.prompt.fingerOnSensorDefault;
     
     return (
     <View>

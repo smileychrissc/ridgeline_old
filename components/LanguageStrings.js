@@ -72,8 +72,14 @@ export class LanguageStrings {
   }
 }
 
+/*
+ * Require each language in use
+ */
 const en_US = require('../assets/lang/en_US');
 
+/*
+ * Mapping of language string to array of UI strings
+ */
 const strings = {
   // This is the default language and always needs to be defined
   'en_US': en_US,

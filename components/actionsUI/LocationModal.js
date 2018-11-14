@@ -11,12 +11,21 @@
 import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
 
+import { Language } from '../Language';
 import { ConfirmPage } from './ConfirmPage.js';
 
 /*
  * Shows that a location was saved
  */
 export class LocationModal extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
   /*
    * The UI
    */
@@ -29,7 +38,7 @@ export class LocationModal extends React.Component {
           presentationStyle='overFullScreen'
           style={styles.container}
         >
-          <ConfirmPage title="Lock location saved!" />
+          <ConfirmPage title={this.strings.title.locationSaved} />
         </Modal>
     );
   };

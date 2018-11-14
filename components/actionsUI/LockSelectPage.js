@@ -13,7 +13,13 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { NavigationPage } from './NavigationPage.js';
 
-export class NicknamePage extends NavigationPage {
+/*
+ * Select a lock to work on
+ */
+export class LockSelectPage extends React.Component {
+  /*
+   * initialize instance
+   */
   constructor(props) {
     super(props);
     
@@ -22,7 +28,9 @@ export class NicknamePage extends NavigationPage {
       locks,
     };
   }
-  
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
@@ -38,6 +46,9 @@ export class NicknamePage extends NavigationPage {
   }
 }
 
+/*
+ * Styles for the UI
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -46,7 +57,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   lockID: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 16,
     fontStyle: 'normal',
   },

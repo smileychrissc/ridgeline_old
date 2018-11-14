@@ -11,9 +11,16 @@
 import React from 'react';
 import { Modal, StyleSheet, Switch, Text } from 'react-native';
 
+import Config from '../../Config.js';
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Problem reporting
+ */
 export class ProblemModal extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     return (
         <Modal
@@ -24,14 +31,16 @@ export class ProblemModal extends React.Component {
           style={styles.container}
         >
           <NavigationPage>
-            <WebView style={styles.prompt}
-                     source={{uri: 'https://github.com/facebook/react-native'}} />
+            <WebView style={styles.prompt} source={{uri: Config.uri.problemReport}} />
           </NavigationPage>
         </Modal>
     );
   };
 }
 
+/*
+ * Styles for the UI
+ */
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#a0a0a0',

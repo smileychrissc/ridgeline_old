@@ -13,6 +13,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
+import { Utils } from '../../Utils';
 
 /*
  * Class for allowing the user to enter a lock code
@@ -24,7 +25,7 @@ export class LockCodePage extends React.Component {
   constructor(props) {
     super(props);
     
-    this.state = {message: undefined};
+    this.state = {error: undefined};
     
     // Make the strings locally available instead of method calls
     this.strings = Language.strings();
@@ -39,8 +40,8 @@ export class LockCodePage extends React.Component {
    */
   codeUpdate(newCode: string) {
     this.code = newCode;
-    if (this.state.message) {
-      this.setState({message: undefined});
+    if (this.state.error) {
+      this.setState({error: undefined});
     }
   }
   /*
@@ -48,12 +49,18 @@ export class LockCodePage extends React.Component {
    */
   checkCode() {
     // TODO: Expand code validation
-    if ((typeof this.code == 'string') && (this.code.length >= 4)) {
-      this.props.update(this.code);
-      this.props.next();
-    } else {
-      this.setState({message: this.strings.message.enterCode});
+    if ((typeof this.code != 'string') || (this.code.length < 4)) {
+      this.setState({error: this.strings.message.codeEnter});
+      return;
     }
+    // Basic check: look for the code in the list of IDs passed in
+    if (Utils.findInList(this.code, this.props.lockIDs)) {
+      this.setState({error: this.strings.message.codeDuplicate});
+      return;
+    }
+    // We're good
+    this.props.update(this.code);
+    this.props.next();
   }
   /*
    * The UI
@@ -62,13 +69,14 @@ export class LockCodePage extends React.Component {
     return (
       <NavigationPage prev={this.props.prev} next={this.checkCode} cancel={this.props.cancel} >
         <View style={styles.container}>
-          {
-            this.state.message && <Text style={styles.message}>{this.state.message}</Text>
-          }
           <Text style={styles.prompt}>{this.strings.prompt.enterCode}</Text>
           <TextInput style={styles.name}
+                     autoFocus={true}
                      placeholder={this.strings.placeholder.lockCode}
                      onChangeText={this.codeUpdate} />
+        {
+          this.state.error && <Text style={styles.error}>{this.state.error}</Text>
+        }
         </View>
       </NavigationPage>
     );
@@ -86,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   prompt: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 16,
     fontStyle: 'italic',
   },
@@ -95,11 +103,13 @@ const styles = StyleSheet.create({
     height: 25,
     marginTop: 10,
     borderWidth: 1,
+    borderColor: '#808080',
   },
-  message: {
+  error: {
     color: 'red',
-    fontSize: 16,
+    fontSize: 14,
     fontStyle: 'normal',
+    marginTop: 10,
   },
 });
 

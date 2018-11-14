@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   prompt: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 20,
     fontStyle: 'normal',
   },

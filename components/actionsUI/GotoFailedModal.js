@@ -11,12 +11,21 @@
 import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
 
+import { Language } from '../Language';
 import { ConfirmPage } from './ConfirmPage.js';
 
 /*
  * Displays a message when there isn't a stored location to go to
  */
 export class GotoFailedModal extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
   /*
    * The UI
    */
@@ -29,7 +38,7 @@ export class GotoFailedModal extends React.Component {
           presentationStyle='overFullScreen'
           style={styles.container}
         >
-          <ConfirmPage title="There isn't a stored location to go to" />
+          <ConfirmPage title={this.strings.message.locationFailed} />
         </Modal>
     );
   };

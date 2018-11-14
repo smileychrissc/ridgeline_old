@@ -11,21 +11,39 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Page for displaying confirmation
+ */
 export class ConfirmPage extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>{this.props.title}</Text>
-          <Text style={styles.hint}>Press next to continue</Text>
+          <Text style={styles.hint}>{this.strings.message.pressNextToContinue}</Text>
         </View>
       </NavigationPage>
     );
   }
 }
 
+/*
+ * Styles for this page
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -34,7 +52,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   prompt: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 16,
     fontStyle: 'normal',
   },

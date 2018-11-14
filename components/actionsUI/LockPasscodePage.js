@@ -73,20 +73,21 @@ export class LockPasscodePage extends React.Component {
     }
     
     return (
-      <NavigationPage next={this.checkPassword} cancel={this.props.cancel} >
+      <NavigationPage prev={this.props.prev} next={this.checkPassword} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>{this.strings.prompt.passwordOptional}</Text>
           <TextInput style={style1}
+                     autoFocus={true}
                      placeholder={this.strings.placeholder.password}
                      onChangeText={this.props.password} />
           <TextInput style={style2}
                      placeholder={this.strings.placeholder.passwordConfirm}
                      onChangeText={this.props.passwordConfirm} />
-          {
-            this.state.error &&
-                <Text style={styles.errorMessage}>{this.state.error}</Text>
-          }
         </View>
+        {
+          this.state.error &&
+              <Text style={styles.errorMessage}>{this.state.error}</Text>
+        }
       </NavigationPage>
     );
   }
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   prompt: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 16,
     fontStyle: 'italic',
   },
@@ -112,6 +113,7 @@ const styles = StyleSheet.create({
     height: 25,
     marginTop: 10,
     borderWidth: 1,
+    borderColor: '#808080',
   },
   passcodeMismatch: {
     width:150,
@@ -128,8 +130,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   errorMessage: {
-    fontSize: 18,
+    fontSize: 14,
     fontStyle: 'normal',
     color: 'red',
+    marginTop: 10,
   }
 });

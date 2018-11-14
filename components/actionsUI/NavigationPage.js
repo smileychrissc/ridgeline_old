@@ -43,7 +43,7 @@ export class NavigationPage extends React.Component {
                                 action={this.props.prev} />
           }
           {
-            this.props.children
+              this.props.children
           }
           {
             this.props.next &&

@@ -62,6 +62,9 @@ export class NewLockModal extends React.Component {
     this.state = {
       curPage: ((typeof this.props.nickname == 'string') && (this.props.nickname.length > 0)) ? 1 : 0,
       nickname: this.props.nickname,
+      lockID: undefined,
+      lockName: undefined,
+      passcode: undefined,
       finished: false,
       errorMsg,
     };
@@ -180,6 +183,7 @@ export class NewLockModal extends React.Component {
           {
             (pageName == LOCK_CODE_PAGE) &&
                 <LockCodePage lockIDs={this.props.lockIDs}
+                              defaultID={this.state.lockID}
                                 prev={this.prevPage}
                                 next={this.nextPage}
                                 update={this.updateLockID}

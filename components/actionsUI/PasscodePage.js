@@ -11,21 +11,41 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Page for capturing the user's passcode
+ */
 export class PasscodePage extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
+  /*
+   * The UI
+   */
   render() {
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
-          <Text style={styles.prompt}>Enter the lock password</Text>
-          <TextInput style={styles.passcode} placeholder="Password" />
+          <Text style={styles.prompt}>{this.strings.prompt.lockPassword}</Text>
+          <TextInput style={styles.passcode}
+                     autoFocus={true}
+                     placeholder={this.strings.placeholder.lockPassword} />
         </View>
       </NavigationPage>
     );
   }
 }
 
+/*
+ * The styles for this UI
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -34,7 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   prompt: {
-    color: '#202020',
+    color: '#303030',
     fontSize: 16,
     fontStyle: 'italic',
   },

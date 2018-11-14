@@ -12,6 +12,7 @@ import React from 'react';
 import { Modal, StyleSheet } from 'react-native';
 
 import { ConfirmPage } from './ConfirmPage.js';
+import { Language } from '../Language';
 import { LockSelectPage } from './LockSelectPage.js';
 import { PasscodePage } from './PasscodePage.js';
 
@@ -34,14 +35,16 @@ export class ResetModal extends React.Component {
    */
   constructor(props) {
     super(props);
-    
+
+    this.strings = Language.strings();
+
     this.state = {
-      message: "Continue to clear all information on the lock",
+      message: this.strings.message.continueClear,
       curPage: 0,
       passcode: undefined,
       lockID: undefined,
     };
-    
+
     // Bind functions
     this.nextPage = this.nextPage.bind(this);
     this.prevPage = this.prevPage.bind(this);
@@ -80,7 +83,7 @@ export class ResetModal extends React.Component {
   wipeLock() {
     this.props.update(this.state.lockID, this.state.passcode);
 
-    this.setState({message: "Lock has been cleared"});
+    this.setState({message: this.strings.message.lockCleared});
   }
   /*
    * The UI
