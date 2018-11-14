@@ -30,12 +30,17 @@ export class LockNamePage extends React.Component {
    * The UI
    */
   render() {
+    let curName = this.props.name;
+    if ((typeof curName != 'string') || (curName.length <= 0))
+      curName = undefined;
+    
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>{this.strings.prompt.lockName}</Text>
           <TextInput style={styles.name}
                      autoFocus={true}
+                     defaultValue={curName}
                      placeholder={this.strings.placeholder.lockName}
                      onChangeText={this.props.update} />
         </View>

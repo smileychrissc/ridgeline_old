@@ -29,11 +29,12 @@ export class LockCodePage extends React.Component {
     
     // Make the strings locally available instead of method calls
     this.strings = Language.strings();
-    this.code = undefined;
+    this.code = this.props.defaultID;
     
     // Bind functions
-    this.codeUpdate = this.codeUpdate.bind(this);
     this.checkCode = this.checkCode.bind(this);
+    this.codeUpdate = this.codeUpdate.bind(this);
+    this.prevPage = this.prevPage.bind(this);
   }
   /*
    * Keeps track of the new code
@@ -63,15 +64,27 @@ export class LockCodePage extends React.Component {
     this.props.next();
   }
   /*
+   * Stores the code for later retrieval
+   */
+  prevPage() {
+    this.props.update(this.code);
+    this.props.prev();
+  }
+  /*
    * The UI
    */
   render() {
+    let curCode = this.code;
+    if ((typeof curCode != 'string') || (curCode.length <= 0))
+      curCode = undefined;
+    
     return (
-      <NavigationPage prev={this.props.prev} next={this.checkCode} cancel={this.props.cancel} >
+      <NavigationPage prev={this.prevPage} next={this.checkCode} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>{this.strings.prompt.enterCode}</Text>
           <TextInput style={styles.name}
                      autoFocus={true}
+                     defaultValue={curCode}
                      placeholder={this.strings.placeholder.lockCode}
                      onChangeText={this.codeUpdate} />
         {

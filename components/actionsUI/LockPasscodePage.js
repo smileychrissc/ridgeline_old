@@ -79,9 +79,11 @@ export class LockPasscodePage extends React.Component {
           <TextInput style={style1}
                      autoFocus={true}
                      placeholder={this.strings.placeholder.password}
+                     textContentType="password"
                      onChangeText={this.props.password} />
           <TextInput style={style2}
                      placeholder={this.strings.placeholder.passwordConfirm}
+                     textContentType="password"
                      onChangeText={this.props.passwordConfirm} />
         </View>
         {

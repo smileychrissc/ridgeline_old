@@ -30,12 +30,17 @@ export class NicknamePage extends React.Component {
    * The UI
    */
   render() {
+    let curNickname = this.props.nickname;
+    if ((typeof curNickname != 'string') || (curNickname.length <= 0))
+      curNickname = undefined;
+    
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
           <Text style={styles.prompt}>{this.strings.prompt.enterNickname}</Text>
           <TextInput style={styles.nickname}
                      autoFocus={true}
+                     defaultValue={curNickname}
                      placeholder={this.strings.placeholder.nickname}
                      onChangeText={this.props.update}/>
         </View>

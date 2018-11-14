@@ -36,6 +36,7 @@ export class PasscodePage extends React.Component {
           <Text style={styles.prompt}>{this.strings.prompt.lockPassword}</Text>
           <TextInput style={styles.passcode}
                      autoFocus={true}
+                     textContentType="password"
                      placeholder={this.strings.placeholder.lockPassword} />
         </View>
       </NavigationPage>

@@ -176,7 +176,8 @@ export class NewLockModal extends React.Component {
         >
           {
             (pageName == NICKNAME_PAGE) &&
-                <NicknamePage next={this.nextPage}
+                <NicknamePage nickname={this.state.nickname}
+                              next={this.nextPage}
                               update={this.updateNickname}
                               cancel={this.props.cancel} />
           }
@@ -184,14 +185,15 @@ export class NewLockModal extends React.Component {
             (pageName == LOCK_CODE_PAGE) &&
                 <LockCodePage lockIDs={this.props.lockIDs}
                               defaultID={this.state.lockID}
-                                prev={this.prevPage}
-                                next={this.nextPage}
-                                update={this.updateLockID}
-                                cancel={this.props.cancel} />
+                              prev={this.prevPage}
+                              next={this.nextPage}
+                              update={this.updateLockID}
+                              cancel={this.props.cancel} />
           }
           {
             (pageName == LOCK_NAME_PAGE) &&
-                <LockNamePage prev={this.prevPage}
+                <LockNamePage name={this.state.lockName}
+                              prev={this.prevPage}
                               next={this.nextPage}
                               update={this.updateLockName}
                               cancel={this.props.cancel} />
