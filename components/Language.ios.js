@@ -19,6 +19,15 @@ import { LanguageStrings } from './LanguageStrings.js';
  */
 export class Language extends LanguageStrings {
   /*
+   * The current set of strings
+   */
+  static currentStrings = undefined;
+  /*
+   * Method for accessing strings. Gets replaced when strings are
+   * loaded
+   */
+  static strings() {return Language.currentStrings;}
+  /*
    * Returns the strings associated with the requested language. If a 2 character
    * language is requested, the first match is returned. If the language is not found then
    * an attempt is made to default to en_US.
@@ -27,17 +36,24 @@ export class Language extends LanguageStrings {
    * Returns the loaded strings.
    * Note that if the language is not found, the returned strings are type undefined
    */
-  getStrings = (lang, cb) => {
+  static loadStrings(lang, cb) {
     if (!lang || (typeof lang != 'string') || (lang.length < 2)) {
       lang = NativeModules.SettingsManager.settings.AppleLocale;
     }
-    if (!haveLang(lang))
-      lang = 'en_US';
     
-    let strings = getLangStrings(lang);
+    let ls = new LanguageStrings();
+    if (!ls.haveLang(lang))
+      lang = 'en_US';
+
+    let strings = ls.getLangStrings(lang);
     if (!strings && !lang.equals('en_US')) {
       lang = 'en_US';
-      strings = getLangString(lang);
+      strings = ls.getLangString(lang);
+    }
+    if (strings) {
+      // We wrap the scope of the new strings to ensure they're kept around as
+      // long as needed
+      ((newStrings) => {Language.currentStrings = newStrings;})(strings);
     }
     if (typeof cb == 'function') {
       cb(lang, strings);

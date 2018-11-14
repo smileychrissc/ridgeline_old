@@ -11,8 +11,15 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+/*
+ * Displays the number of locks registered
+ */
 export class LocksRegisteredText extends React.Component {
+  /*
+   * The UI
+   */
   render() {
+    // TODO: format text
     let numLocks = (this.props.count ? '' + this.props.count : 'no');
     return (
       <Text style={styles.registered}>{numLocks} locks registered</Text>
@@ -20,6 +27,9 @@ export class LocksRegisteredText extends React.Component {
   }
 }
 
+/*
+ * Styles for the control
+ */
 const styles = StyleSheet.create({
   registered: {
     fontSize: 14,

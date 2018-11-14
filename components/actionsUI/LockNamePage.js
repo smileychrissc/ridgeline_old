@@ -11,6 +11,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
 
 /*
@@ -18,14 +19,24 @@ import { NavigationPage } from './NavigationPage.js';
  */
 export class LockNamePage extends React.Component {
   /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
+  /*
    * The UI
    */
   render() {
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <View style={styles.container}>
-          <Text style={styles.prompt}>Enter an optional name for this lock</Text>
-          <TextInput style={styles.name} placeholder="Lock name" onChangeText={this.props.update} />
+          <Text style={styles.prompt}>{this.strings.prompt.lockName}</Text>
+          <TextInput style={styles.name}
+                     placeholder={this.strings.placeholder.lockName}
+                     onChangeText={this.props.update} />
         </View>
       </NavigationPage>
     );
@@ -48,6 +59,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   name: {
+    width: 150,
+    height: 25,
+    marginTop: 10,
+    borderWidth: 1,
   },
 });
 

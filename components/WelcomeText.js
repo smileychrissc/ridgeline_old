@@ -11,8 +11,15 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+/*
+ * Displays welcome text
+ */
 export class WelcomeText extends React.Component {
+  /*
+   * The UI
+   */
   render() {
+    // TODO: format message
     let msg = "Welcome";
     if (!this.props.firstVisit)
       msg += " back";
@@ -25,6 +32,9 @@ export class WelcomeText extends React.Component {
   }
 }
 
+/*
+ * The styles for control
+ */
 const styles = StyleSheet.create({
   welcome: {
     fontSize: 24,

@@ -9,20 +9,33 @@
  * are prohibited.
  */
 import React from 'react';
-import { StyleSheet } from 'react-native';
 
+import { Language } from '../Language';
 import { FingerprintCapture } from './FingerprintCapture.js';
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Page for capturing fingerprints
+ */
 export class FingerprintCapturePage extends React.Component {
+ /*
+  * Initialize instance
+  */
   constructor(props) {
     super(props);
+    
+    this.strings = Language.strings();
   }
   
+  /*
+   * The UI
+   */
   render() {
+    // TODO: Formatting strings
     let prompt = 'Capturing ' + (this.props.captured + 1) + ' out of ' + this.props.fingerprints;
     let instructions = (this.props.captured == 0) ?
-                            'Place finger on sensor' : 'Place same finger on sensor again';
+                            this.strings.prompt.fingerOnSensor :
+                                            this.strings.prompt.fingerOnSensorAgain;
     return (
       <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
         <FingerprintCapture prompt={prompt}
@@ -31,6 +44,3 @@ export class FingerprintCapturePage extends React.Component {
    );
   }
 }
-
-const styles = StyleSheet.create({
-});

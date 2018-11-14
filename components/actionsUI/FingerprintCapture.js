@@ -11,7 +11,13 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
+/*
+ * Basic interface for capturing fingerprints
+ */
 export class FingerprintCapture extends React.Component {
+  /*
+   * The UI
+   */
   render() {
     let instructions = this.props.instructions || 'Place finger on sensor to capture';
     
@@ -35,6 +41,9 @@ export class FingerprintCapture extends React.Component {
   }
 }
 
+/*
+ * Styles for this component
+ */
 const styles = StyleSheet.create({
   prompt: {
     fontStyle: 'normal',

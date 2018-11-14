@@ -11,6 +11,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
 
 /*
@@ -25,6 +26,8 @@ export class LockPasscodePage extends React.Component {
     
     this.state = {pw1: undefined, pw2: undefined, error: undefined};
     
+    this.strings = Language.strings();
+
     this.checkPassword =  this.checkPassword.bind(this);
     this.password = this.password.bind(this);
     this.passwordConfirm = this.passwordConfirm.bind(this);
@@ -59,23 +62,25 @@ export class LockPasscodePage extends React.Component {
     // get a few characters in)
     let style1 = styles.passcode;
     let style2 = styles.passcode;
-    if (this.state.pw1 == this.state.pw2) {
-      style1 = styles.passcodeMatch;
-      style2 = styles.passcodeMatch;
-    } else if (this.state.pw2 && (this.state.pw1 != this.state.pw2) &&
-        ((this.state.pw2.length >= this.state.pw1.length) || (this.state.pw2.length > 3))) {
-      style2 = styles.passcodeMismatch;
+    if (this.state.pw2) {
+      if (this.state.pw1 == this.state.pw2) {
+        style1 = styles.passcodeMatch;
+        style2 = styles.passcodeMatch;
+      } else if ((this.state.pw1 != this.state.pw2) &&
+          ((this.state.pw2.length >= this.state.pw1.length) || (this.state.pw2.length > 3))) {
+        style2 = styles.passcodeMismatch;
+      }
     }
     
     return (
       <NavigationPage next={this.checkPassword} cancel={this.props.cancel} >
         <View style={styles.container}>
-          <Text style={styles.prompt}>Enter an optional password for this lock</Text>
+          <Text style={styles.prompt}>{this.strings.prompt.passwordOptional}</Text>
           <TextInput style={style1}
-                     placeholder="Password"
+                     placeholder={this.strings.placeholder.password}
                      onChangeText={this.props.password} />
           <TextInput style={style2}
-                     placeholder="Confirm password"
+                     placeholder={this.strings.placeholder.passwordConfirm}
                      onChangeText={this.props.passwordConfirm} />
           {
             this.state.error &&
@@ -103,17 +108,24 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   passcode: {
-    width:140,
+    width:150,
+    height: 25,
+    marginTop: 10,
+    borderWidth: 1,
   },
   passcodeMismatch: {
+    width:150,
+    height: 25,
+    marginTop: 10,
     borderColor: 'red',
     borderWidth: 1,
-    width:140,
   },
   passcodeMatch: {
+    width:150,
+    height: 25,
+    marginTop: 10,
     borderColor: 'green',
     borderWidth: 1,
-    width:140,
   },
   errorMessage: {
     fontSize: 18,

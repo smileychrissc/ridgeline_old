@@ -11,12 +11,21 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
 
 /*
  * Page for confirming that data for a new lock was entered
  */
 export class NewLockFinishPage extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
   /*
    * The UI
    */
@@ -27,7 +36,7 @@ export class NewLockFinishPage extends React.Component {
           {
             !this.props.finished &&
               (<View>
-                 <Text style={styles.prompt}>Preparing your new lock</Text>
+                 <Text style={styles.prompt}>{this.strings.prompt.newLockFinish}</Text>
                  <ActivityIndicator size="large" color='#505050' />
                </View>
               )
@@ -35,8 +44,8 @@ export class NewLockFinishPage extends React.Component {
           {
            this.props.finished &&
               (<View>
-                 <Text style={styles.success}>Success!</Text>
-                 <Text style={styles.nextStep}>You will now register a fingerprint for unlocking</Text>
+                 <Text style={styles.success}>{this.strings.prompt.success}</Text>
+                 <Text style={styles.nextStep}>{this.strings.prompt.newLockFingerprints}</Text>
                </View>
               )
           }

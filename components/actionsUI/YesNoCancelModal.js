@@ -11,6 +11,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationButton } from './NavigationButton.js';
 
 /*
@@ -23,7 +24,9 @@ export class YesNoCancelModal extends React.Component {
   constructor(props) {
     super(props);
     
-    let cancelMessage = this.props.message || "Do you want to continue";
+    this.strings = Language.strings();
+
+    let cancelMessage = this.props.message || this.strings.message.defaultContinue;
     
     this.state = {
       cancelMessage
@@ -41,14 +44,14 @@ export class YesNoCancelModal extends React.Component {
               this.props.yes &&
                 (<View style={styles.firstButton}>
                   <NavigationButton
-                                  title="Yes"
+                                  title={this.strings.title.yes}
                                   source={require('../../assets/next.gif')}
                                   action={this.props.yes} />
                 </View>)
             }
             {
               this.props.no &&
-                  <NavigationButton title="No"
+                  <NavigationButton title={this.strings.title.no}
                                   source={require('../../assets/prev.gif')}
                                   action={this.props.no} />
             }
@@ -56,7 +59,7 @@ export class YesNoCancelModal extends React.Component {
               this.props.cancel &&
                 (<View style={styles.lastButton}>
                   <NavigationButton
-                                  title="Cancel"
+                                  title={this.strings.title.cancel}
                                   source={require('../../assets/cancel.gif')}
                                   action={this.props.cancel} />
                 </View>)

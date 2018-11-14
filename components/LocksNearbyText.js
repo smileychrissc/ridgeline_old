@@ -11,8 +11,15 @@
 import React from 'react';
 import { StyleSheet, Text } from 'react-native';
 
+/*
+ * Displays the number of nearby locks
+ */
 export class LocksNearbyText extends React.Component {
+  /*
+   * The UI
+   */
   render() {
+    // TODO: format text
     if (this.props.count > 0)
       return (
         <Text style={styles.detected}>{this.props.count} locks are nearby</Text>
@@ -22,6 +29,9 @@ export class LocksNearbyText extends React.Component {
   }
 }
 
+/*
+ * Styles for this control
+ */
 const styles = StyleSheet.create({
   detected: {
     fontSize: 14,

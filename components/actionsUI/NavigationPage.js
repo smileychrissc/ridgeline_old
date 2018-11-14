@@ -11,9 +11,24 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationButton } from './NavigationButton.js';
 
+/*
+ * General navigation page that embeds child controls
+ */
 export class NavigationPage extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.strings = Language.strings();
+  }
+  /*
+   * The UI
+   */
   render() {
     return (
       <View style={styles.view}>
@@ -24,7 +39,7 @@ export class NavigationPage extends React.Component {
           {
             this.props.prev &&
               <NavigationButton source={require('../../assets/prev.gif')}
-                                title='Prev'
+                                title={this.strings.title.previous}
                                 action={this.props.prev} />
           }
           {
@@ -33,7 +48,7 @@ export class NavigationPage extends React.Component {
           {
             this.props.next &&
               <NavigationButton source={require('../../assets/next.gif')}
-                                title='Next'
+                                title={this.strings.title.next}
                                 direction='left'
                                 action={this.props.next} />
           }
@@ -41,7 +56,7 @@ export class NavigationPage extends React.Component {
         {
           this.props.cancel &&
               <NavigationButton source={require('../../assets/cancel.gif')}
-                                title='Cancel'
+                                title={this.strings.title.navCancel}
                                 action={this.props.cancel} />
         }
       </View>
@@ -49,6 +64,9 @@ export class NavigationPage extends React.Component {
   }
 }
 
+/*
+ * Styles for navigation controls
+ */
 const styles = StyleSheet.create({
   view: {
     backgroundColor: '#e0e0e0',

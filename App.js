@@ -90,7 +90,7 @@ export default class App extends React.Component {
     // Get the language from the system and then look for a stored setting
     // This may cause a UI change if the promises aren't executed immediately in
     // future.
-    this.getLanguageAndStrings();
+    this.loadLanguageAndStrings();
     
     // Check if there is a nickname registered
     this.fromKey('nickname')
@@ -126,14 +126,14 @@ export default class App extends React.Component {
    * loads a stored UI Language string if it's been overridden
    * The state gets updated with the language and its strings
    */
-  getLanguageAndStrings() {
+  loadLanguageAndStrings() {
     this.fromKey('language')
       .then((language) => {
           if ((typeof language != 'string') || (language.length < 2)) {
             language = this.state.language;
           }
-          Language.getStrings(language || DEFAULT_LANGUAGE,
-                              (language, strings) => this.setState(language, strings));
+          Language.loadStrings(language || DEFAULT_LANGUAGE,
+                              (language, strings) => this.setState({language, strings}));
         })
       .catch((error) => {/*TODO: handle error*/});
   }
@@ -506,7 +506,6 @@ export default class App extends React.Component {
   }
   
   render() {
-    // TODO: Pre-bind functions to 'this'
     return (
       <View style={styles.containerTop}>
         <WelcomeText firstVisit={this.state.newUser} user={this.state.nickname}/>
@@ -526,7 +525,7 @@ export default class App extends React.Component {
           }
           {
             this.state.locksNearbyCount && this.state.locksNearbyAreLocked &&
-                <Unlock title="Unlock"
+                <Unlock title={this.state.strings.title.unlock}
                         accessibilityLabel="Unlock the closed lock"
                         onPress={this.onPressUnlock}
                         />
@@ -539,14 +538,14 @@ export default class App extends React.Component {
         <View>
           {
             this.state.locksNearbyCount &&
-                <Button title="Remember Location"
+                <Button title={this.state.strings.title.rememberLocation}
                   accessibilityLabel="Save the current location of this lock"
                   onPress={this.onPressRemember.bind(this)}
                   />
           }
           {
             this.state.lockCount &&
-                <Button title="Goto Lock Location"
+                <Button title={this.state.strings.title.gotoLocation}
                   accessibilityLabel="Show me the last known location of this lock"
                   onPress={this.onPressGoto.bind(this)}
                   />
@@ -554,19 +553,19 @@ export default class App extends React.Component {
         </View>
         <View>
           {
-            this.state.lockCount && <Button title="All Of Mine"
+            this.state.lockCount && <Button title={this.state.strings.title.allMyLocks}
                                      accessibilityLabel="Manage all my locks"
                                      onPress={this.onPressManage.bind(this)}
                                      />
           }
           {
-            this.state.lockCount && <Button title="Wipe Lock"
+            this.state.lockCount && <Button title={this.state.strings.title.wipeLock}
                                      accessibilityLabel="Reset lock by clearing fingerprints and other data"
                                      onPress={this.onPressResetLock.bind(this)}
                                      />
           }
           {
-            this.state.lockCount && <Button title="Forget lock"
+            this.state.lockCount && <Button title={this.state.strings.title.forgetLock}
                                      accessibilityLabel="I no longer have this lock"
                                      onPress={this.onPressForgetLock.bind(this)}
                                      />

@@ -11,21 +11,73 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { Language } from '../Language';
 import { NavigationPage } from './NavigationPage.js';
 
+/*
+ * Class for allowing the user to enter a lock code
+ */
 export class LockCodePage extends React.Component {
+  /*
+   * Initialize instance
+   */
+  constructor(props) {
+    super(props);
+    
+    this.state = {message: undefined};
+    
+    // Make the strings locally available instead of method calls
+    this.strings = Language.strings();
+    this.code = undefined;
+    
+    // Bind functions
+    this.codeUpdate = this.codeUpdate.bind(this);
+    this.checkCode = this.checkCode.bind(this);
+  }
+  /*
+   * Keeps track of the new code
+   */
+  codeUpdate(newCode: string) {
+    this.code = newCode;
+    if (this.state.message) {
+      this.setState({message: undefined});
+    }
+  }
+  /*
+   * Verifies the new code
+   */
+  checkCode() {
+    // TODO: Expand code validation
+    if ((typeof this.code == 'string') && (this.code.length >= 4)) {
+      this.props.update(this.code);
+      this.props.next();
+    } else {
+      this.setState({message: this.strings.message.enterCode});
+    }
+  }
+  /*
+   * The UI
+   */
   render() {
     return (
-      <NavigationPage prev={this.props.prev} next={this.props.next} cancel={this.props.cancel} >
+      <NavigationPage prev={this.props.prev} next={this.checkCode} cancel={this.props.cancel} >
         <View style={styles.container}>
-          <Text style={styles.prompt}>Enter the code for the lock</Text>
-          <TextInput style={styles.name} placeholder="Lock code" onChangeText={this.props.update}/>
+          {
+            this.state.message && <Text style={styles.message}>{this.state.message}</Text>
+          }
+          <Text style={styles.prompt}>{this.strings.prompt.enterCode}</Text>
+          <TextInput style={styles.name}
+                     placeholder={this.strings.placeholder.lockCode}
+                     onChangeText={this.codeUpdate} />
         </View>
       </NavigationPage>
     );
   }
 }
 
+/*
+ * Styles for the UI
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -39,6 +91,15 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   name: {
+    width: 150,
+    height: 25,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+  message: {
+    color: 'red',
+    fontSize: 16,
+    fontStyle: 'normal',
   },
 });
 

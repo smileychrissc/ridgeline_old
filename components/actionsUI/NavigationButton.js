@@ -21,7 +21,7 @@ export class NavigationButton extends React.Component {
               this.props.title && this.props.direction && (this.props.direction == 'left') &&
                   <Text style={styles.pageButton}>{this.props.title}</Text>
             }
-            <Image source={this.props.source} />
+            <Image source={this.props.source} style={styles.image} />
             {
               this.props.title && (!this.props.direction || (this.props.direction != 'left')) &&
                   <Text style={styles.pageButton}>{this.props.title}</Text>
@@ -44,5 +44,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  image: {
+    marginLeft: 5,
+    marginRight: 5,
   },
 });

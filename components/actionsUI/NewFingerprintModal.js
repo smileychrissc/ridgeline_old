@@ -13,6 +13,7 @@ import { Modal, StyleSheet } from 'react-native';
 
 import Config from '../../Config.js';
 
+import { Language } from '../Language';
 import { FingerprintCapturePage } from './FingerprintCapturePage.js';
 import { YesNoCancelModal } from './YesNoCancelModal.js';
 
@@ -26,8 +27,9 @@ export class NewFingerprintModal extends React.Component {
   constructor(props) {
     super(props);
     
-    let cancelMessage = this.props.cancelMessage ||
-                                 "Are you sure you want to cancel registering a print";
+    this.strings = Language.strings();
+
+    let cancelMessage = this.props.cancelMessage || this.strings.message.cancelFingerprintRegister;
     
     this.state = {
       captured: 0,
