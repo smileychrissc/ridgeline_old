@@ -3,7 +3,7 @@
  * Permissions are granted under: GNU Affero General Public License v3.0.
  * The contents of this file heading may not be modified and must be included
  * in full with any and all distributions of this file and any derived product
- * regardless of any modifications.
+ * regardless of any other modifications.
  * Use of this file or derived products in any form for illegal activities or
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
@@ -16,6 +16,10 @@ import { NavigationPage } from './NavigationPage.js';
 
 /*
  * Handles the user entering and confirming a password
+ * Props:
+ *  prev - Callback for the previous button press. Can be undefined
+ *  next - Callback for the next button press. Receives the entered password (if any)
+ *  cancel - Callback for the cancel button press. Can be undefined
  */
 export class LockPasscodePage extends React.Component {
   /*
@@ -51,7 +55,7 @@ export class LockPasscodePage extends React.Component {
     if (this.state.pw1 == this.state.pw2) {
       this.props.next(this.state.pw1);
     }
-    this.setState({error: 'Passwords need to match'});
+    this.setState({error: this.strings.message.passwordsMismatch});
   }
   /*
    * The UI
@@ -80,11 +84,11 @@ export class LockPasscodePage extends React.Component {
                      autoFocus={true}
                      placeholder={this.strings.placeholder.password}
                      textContentType="password"
-                     onChangeText={this.props.password} />
+                     onChangeText={this.password} />
           <TextInput style={style2}
                      placeholder={this.strings.placeholder.passwordConfirm}
                      textContentType="password"
-                     onChangeText={this.props.passwordConfirm} />
+                     onChangeText={this.passwordConfirm} />
         </View>
         {
           this.state.error &&

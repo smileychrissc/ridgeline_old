@@ -3,7 +3,7 @@
  * Permissions are granted under: GNU Affero General Public License v3.0.
  * The contents of this file heading may not be modified and must be included
  * in full with any and all distributions of this file and any derived product
- * regardless of any modifications.
+ * regardless of any other modifications.
  * Use of this file or derived products in any form for illegal activities or
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
@@ -17,6 +17,11 @@ import { Utils } from '../../Utils';
 
 /*
  * Class for allowing the user to enter a lock code
+ * Props:
+ *  defaultID - The ID used to pre-populate the control. This can be undefined
+ *  lockIDs - A comma separated list of known Lock IDs for display
+ *  cancel - Callback for when the user cancels
+ *  update - Callback for receiving the code. Receives the code as a parameter
  */
 export class LockCodePage extends React.Component {
   /*

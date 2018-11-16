@@ -3,7 +3,7 @@
  * Permissions are granted under: GNU Affero General Public License v3.0.
  * The contents of this file heading may not be modified and must be included
  * in full with any and all distributions of this file and any derived product
- * regardless of any modifications.
+ * regardless of any other modifications.
  * Use of this file or derived products in any form for illegal activities or
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
@@ -15,6 +15,7 @@ import { AsyncStorage } from 'react-native';
 import Config from './Config.js';
 import { WelcomeText } from './components/WelcomeText.js';
 import { Language } from './components/Language';
+import LockInfo from '../../LockInfo.js';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
 import { LocksNearbyText } from './components/LocksNearbyText.js';
 import { BluetoothLocks } from './components/BluetoothLocks.js';
@@ -57,6 +58,7 @@ export default class App extends React.Component {
   // Constructor defines basic state and gets promises for basic information
   constructor(props) {
     super(props);
+
     this.state = {
       newUser: true,         // Convenience flag for first time user
       nickname: undefined,   // The user's nickname
@@ -72,8 +74,10 @@ export default class App extends React.Component {
       language: undefined,   // The current language
       strings: defaultStrings,    // The list of loaded strings
     };
+    
     this.findLocksHandle = undefined;
     this.lockIDs = undefined;
+    this.settings = new SettingsInfo.create(false);
     this.lockComms = new BluetoothLocks();
     
     // Perform function bindings
@@ -89,6 +93,16 @@ export default class App extends React.Component {
     this.onPressUnlock = this.onPressUnlock.bind(this);
     this.resetLock = this.resetLock.bind(this);
     this.unlock = this.unlock.bind(this);
+    
+    // Load defined settings
+    this.fromKeyJSON('settings')
+      .then((settings) => {
+                            // Assign settings
+                            if (settings.autosaveLocation) {
+                              this.settings.autosaveLocation = settings.autosaveLocation;
+                            }
+                          })
+      .catch((error) => {/*TODO: handle error */});
 
     // Get the language from the system and then look for a stored setting
     // This may cause a UI change if the promises aren't executed immediately in
@@ -318,7 +332,7 @@ export default class App extends React.Component {
    */
   newLockRegisterFinished(lockID) {
     this.setState({modalName: NEW_FINGERPRINT_MODAL,
-                   fingerprintCancelMessage: "Continuing leaves lock with no registered fingerprints"});
+                   fingerprintCancelMessage: this.state.strings.message.newLockCancelFingerprint});
     this.lockComms.beginFingerprintCapture(lockID);
   }
   /*
@@ -408,6 +422,21 @@ export default class App extends React.Component {
         let locks = this.state.locksNearby.splice(index, 1);
         this.setState({locksNearby});
       }
+    }
+  }
+  /*
+   * Returns the current settings information in a SettingsInfo object
+   */
+  getSettings() {
+   return this.settings;
+  }
+  /*
+   * Updates the current settings
+   *  settings - instance of SettingsInfo with the new settings
+   */
+  updateSettings(newSettings) {
+    if (newSettings instanceof SettingsInfo) {
+      this.settings = newSettings;
     }
   }
   /*
@@ -529,12 +558,12 @@ export default class App extends React.Component {
           {
             this.state.locksNearbyCount && this.state.locksNearbyAreLocked &&
                 <Unlock title={this.state.strings.title.unlock}
-                        accessibilityLabel="Unlock the closed lock"
+                        accessibilityLabel={this.state.string.label.unlockLock}
                         onPress={this.onPressUnlock}
                         />
            }
           <NewLock title={this.state.strings.title.newLock}
-            accessibilityLabel="Prepare your new lock"
+            accessibilityLabel={this.state.string.label.newLock}
             onPress={this.onPressNewLock.bind(this)}
             />
         </View>
@@ -542,14 +571,14 @@ export default class App extends React.Component {
           {
             this.state.locksNearbyCount &&
                 <Button title={this.state.strings.title.rememberLocation}
-                  accessibilityLabel="Save the current location of this lock"
+                  accessibilityLabel={this.state.string.label.saveLocation}
                   onPress={this.onPressRemember.bind(this)}
                   />
           }
           {
             this.state.lockCount &&
                 <Button title={this.state.strings.title.gotoLocation}
-                  accessibilityLabel="Show me the last known location of this lock"
+                  accessibilityLabel={this.state.string.label.gotoLocation}
                   onPress={this.onPressGoto.bind(this)}
                   />
           }
@@ -557,38 +586,38 @@ export default class App extends React.Component {
         <View>
           {
             this.state.lockCount && <Button title={this.state.strings.title.allMyLocks}
-                                     accessibilityLabel="Manage all my locks"
+                                     accessibilityLabel={this.state.string.label.manageLocks}
                                      onPress={this.onPressManage.bind(this)}
                                      />
           }
           {
             this.state.lockCount && <Button title={this.state.strings.title.wipeLock}
-                                     accessibilityLabel="Reset lock by clearing fingerprints and other data"
+                                     accessibilityLabel={this.state.string.label.resetLock}
                                      onPress={this.onPressResetLock.bind(this)}
                                      />
           }
           {
             this.state.lockCount && <Button title={this.state.strings.title.forgetLock}
-                                     accessibilityLabel="I no longer have this lock"
+                                     accessibilityLabel={this.state.string.label.forgetLock}
                                      onPress={this.onPressForgetLock.bind(this)}
                                      />
           }
         </View>
         <View style={styles.containerFooter}>
           <Button title={this.state.strings.title.settings}
-            accessibilityLabel="Configure location auto saving and other features"
+            accessibilityLabel={this.state.string.label.settings}
             onPress={this.onPressSettings.bind(this)}
           />
           <Button visible={false} title={this.state.strings.title.logs}
-            accessibilityLabel="View lock logs"
+            accessibilityLabel={this.state.string.label.logs}
             onPress={this.onPressLogs.bind(this)}
           />
           <Button title={this.state.strings.title.problems}
-            accessibilityLabel="I'm having problems with my lock"
+            accessibilityLabel={this.state.string.label.problems}
             onPress={this.onPressProblems.bind(this)}
           />
           <Button title={this.state.strings.title.privacy}
-            accessibilityLabel="Our Privacy Policies"
+            accessibilityLabel={this.state.string.label.privacy}
             onPress={this.onPressPrivacy.bind(this)}
           />
         </View>
@@ -641,7 +670,10 @@ export default class App extends React.Component {
         }
         {
           (this.state.modalName == SETTINGS_MODAL) &&
-              <SettingsModal lockIDs={this.lockIDs} cancel={this.cancelModal} />
+              <SettingsModal lockIDs={this.lockIDs}
+                             settings={this.getSettings}
+                             update={this.updateSettings}
+                             cancel={this.cancelModal} />
         }
         {
           (this.state.modalName == PROBLEM_MODAL) &&

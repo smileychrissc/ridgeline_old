@@ -3,7 +3,7 @@
  * Permissions are granted under: GNU Affero General Public License v3.0.
  * The contents of this file heading may not be modified and must be included
  * in full with any and all distributions of this file and any derived product
- * regardless of any modifications.
+ * regardless of any other modifications.
  * Use of this file or derived products in any form for illegal activities or
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
@@ -19,6 +19,11 @@ import { NavigationPage } from './NavigationPage.js';
 export class LockSelectPage extends React.Component {
   /*
    * initialize instance
+ * Props:
+ *  lockIDs - A comma separated list of known Lock IDs for display
+ *  prev - Callback for the previous button press. Can be undefined
+ *  next - Callback for the next button press. Can be undefined
+ *  cancel - Callback for the cancel button press. Can be undefined
    */
   constructor(props) {
     super(props);
@@ -37,7 +42,7 @@ export class LockSelectPage extends React.Component {
         <View style={styles.container}>
         {
           <FlatList data={this.state.locks}
-                    renderItem={(item)=>(<Text style={styles.lockID}>{item}</Text>)}
+                    renderItem={({item}) => <Text style={styles.lockID}>{item}</Text>}
           />
         }
         </View>

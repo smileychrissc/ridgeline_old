@@ -3,7 +3,7 @@
  * Permissions are granted under: GNU Affero General Public License v3.0.
  * The contents of this file heading may not be modified and must be included
  * in full with any and all distributions of this file and any derived product
- * regardless of any modifications.
+ * regardless of any other modifications.
  * Use of this file or derived products in any form for illegal activities or
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
@@ -28,6 +28,9 @@ const pages = [
 
 /*
  * Handles the UI for resetting a lock
+ *  lockIDs - A comma separated list of known Lock IDs for display
+ *  cancel - Callback for when the user cancels
+ *  update - Callback for resetting the lock. Receives the lockID and password as separate parameters
  */
 export class ResetModal extends React.Component {
   /*
@@ -107,7 +110,6 @@ export class ResetModal extends React.Component {
           {
             (pageName == RESET_SELECT_PAGE) &&
                 <LockSelectPage nextPage={this.nextPage}
-                                cancel={this.props.cancel}
                                 update={this.setLock}
                                 lockIDs={this.props.lockIDs}
                                 cancel={this.props.cancel} />

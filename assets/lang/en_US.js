@@ -1,6 +1,33 @@
+/*
+ * Keep all groupings of strings in alphabetic order by tag (left side value)
+ * The comments following each string pair is the name of module it's used in
+ */
 let strings = {
-  status: {
-    'lockSearching': 'Looking for locks',
+  label: {
+    'forgetLock': 'I no longer have this lock',                     // App
+    'gotoLocation': 'Show me the last known location of this lock', // App
+    'logs': 'View lock logs',                                       // App
+    'manageLocks': 'Manage all my locks',                           // App
+    'newLock': 'Prepare your new lock',                             // App
+    'privacy': 'Our Privacy Policies',                              // App
+    'problems': 'I am having problems with my lock',                // App
+    'resetLock': 'Reset lock by clearing fingerprints and other data',// App
+    'saveLocation': 'Save the current location of this lock',       // App
+    'settings': 'Configure location auto saving and other features',// App
+    'unlockLock': 'Unlock the closed lock',                         // App
+  },
+  message: {
+    'cancelFingerprintRegister': 'Are you sure you want to cancel registering a print', // NewFingerprintModal
+    'codeDuplicate': 'This lock is already registered', // LockCodePage
+    'codeEnter': 'Please enter a valid code before continuing', // LockCodePage
+    'continueClear': 'Continue to clear all information on the lock', // ResetModal
+    'defaultContinue': 'Do you want to continue',     // YesNoCancelModal
+    'locationFailed': 'There is no stored location to go to', // GotoFailedModal
+    'lockCleared': 'Lock has been cleared',           // ResetModal
+    'newLockCancelFingerprint': 'Continuing leaves lock with no registered fingerprints',// App
+    'passwordsMismatch': 'Passwords need to match',   // LockPasscodePage
+    'pressNextToContinue': 'Press next to continue',  // ConfirmPage
+    'pressNextForgetLock': 'Press next to forget this lock', // ForgetModal
   },
   prompt: {
     'enterCode': 'Enter the code for the lock',       // LockCodePage
@@ -13,7 +40,8 @@ let strings = {
     'newLockFinish': 'Preparing your new lock',        // NewLockFinishPage
     'lockPassword': 'Enter the lock password',         // PasscodePage
     'passwordOptional': 'Enter an optional password for this lock', // LockPasscodePage
-    'success': 'Success',                              // Various places
+    'alwaysSaveLastLocation': 'Automatically save last location on detected locking', // SettingsModal
+    'success': 'Success',                              // NewLockFinishPage
   },
   placeholder: {
     'lockCode': 'Lock code',                          // LockCodePage
@@ -23,16 +51,8 @@ let strings = {
     'passwordConfirm': 'Confirm password',            // LockPasscodePage
     'lockPassword': 'Password',                       // PasscodePage
   },
-  message: {
-    'cancelFingerprintRegister': 'Are you sure you want to cancel registering a print', // NewFingerprintModal
-    'codeDuplicate': 'This lock is already registered', // LockCodePage
-    'codeEnter': 'Please enter a valid code before continuing', // LockCodePage
-    'continueClear': 'Continue to clear all information on the lock', // ResetModal
-    'defaultContinue': 'Do you want to continue',     // YesNoCancelModal
-    'locationFailed': 'There is no stored location to go to', // GotoFailedModal
-    'lockCleared': 'Lock has been cleared',           // ResetModal
-    'pressNextToContinue': 'Press next to continue',  // ConfirmPage
-    'pressNextForgetLock': 'Press next to forget this lock', // ForgetModal
+  status: {
+    'lockSearching': 'Looking for locks',
   },
   title: {
     'allMyLocks': 'All Of Mine',        // App

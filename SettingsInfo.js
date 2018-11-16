@@ -8,26 +8,21 @@
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
  */
-import React from 'react';
-import { Button, StyleSheet } from 'react-native';
 
 /*
- * The control for unlocking locked locks
- * Props:
- *  title - The shown text of the control
- *  accessibilityLabel - The label for accessibility
- *  onPress - Callback for when pressed
+ * Used to create a SettingsInfo instance with required fields
  */
-export class Unlock extends React.Component {
+export default class SettingsInfo {
   /*
-   * The UI
+   * Static function for creating an instance
+   * autosaveLocation - Flag for automatically saving a lock's location
+   * Returns a new object with the required fields
    */
-  render() {
-    return (
-        <Button title={this.props.title}
-            accessibilityLabel={this.props.accessibilityLabel}
-            onPress={this.props.onPress}
-        />
-    );
+  static create(autosaveLocation: boolean) {
+    let info = {
+        autosaveLocation,
+    };
+    
+    return info;
   }
-}
+};

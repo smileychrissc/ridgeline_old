@@ -3,7 +3,7 @@
  * Permissions are granted under: GNU Affero General Public License v3.0.
  * The contents of this file heading may not be modified and must be included
  * in full with any and all distributions of this file and any derived product
- * regardless of any modifications.
+ * regardless of any other modifications.
  * Use of this file or derived products in any form for illegal activities or
  * for purposes that can reflect negatively on the original copyright holder(s)
  * are prohibited.
@@ -15,7 +15,13 @@ import { Language } from '../Language';
 import { NavigationButton } from './NavigationButton.js';
 
 /*
- * General navigation page that embeds child controls
+ * General navigation page that embeds child controls into the center of the page
+ * Props:
+ *  title - A string for the top of the page
+ *  prev - Callback for the previous button press. The button won't display if undefined
+ *  next - Callback for the next button press. The button won't display if undefined
+ *  cancel - Callback for the cancel button press. The button won't display if undefined
+ *  [children - React Native prop for when there are children of this component]
  */
 export class NavigationPage extends React.Component {
   /*
