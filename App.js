@@ -15,7 +15,8 @@ import { AsyncStorage } from 'react-native';
 import Config from './Config.js';
 import { WelcomeText } from './components/WelcomeText.js';
 import { Language } from './components/Language';
-import LockInfo from '../../LockInfo.js';
+import LockInfo from './LockInfo.js';
+import SettingsInfo from './SettingsInfo.js';
 import { LocksRegisteredText } from './components/LocksRegisteredText.js';
 import { LocksNearbyText } from './components/LocksNearbyText.js';
 import { BluetoothLocks } from './components/BluetoothLocks.js';
@@ -563,7 +564,7 @@ export default class App extends React.Component {
                         />
            }
           <NewLock title={this.state.strings.title.newLock}
-            accessibilityLabel={this.state.string.label.newLock}
+            accessibilityLabel={this.state.strings.label.newLock}
             onPress={this.onPressNewLock.bind(this)}
             />
         </View>
@@ -605,19 +606,19 @@ export default class App extends React.Component {
         </View>
         <View style={styles.containerFooter}>
           <Button title={this.state.strings.title.settings}
-            accessibilityLabel={this.state.string.label.settings}
+            accessibilityLabel={this.state.strings.label.settings}
             onPress={this.onPressSettings.bind(this)}
           />
           <Button visible={false} title={this.state.strings.title.logs}
-            accessibilityLabel={this.state.string.label.logs}
+            accessibilityLabel={this.state.strings.label.logs}
             onPress={this.onPressLogs.bind(this)}
           />
           <Button title={this.state.strings.title.problems}
-            accessibilityLabel={this.state.string.label.problems}
+            accessibilityLabel={this.state.strings.label.problems}
             onPress={this.onPressProblems.bind(this)}
           />
           <Button title={this.state.strings.title.privacy}
-            accessibilityLabel={this.state.string.label.privacy}
+            accessibilityLabel={this.state.strings.label.privacy}
             onPress={this.onPressPrivacy.bind(this)}
           />
         </View>
