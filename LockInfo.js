@@ -26,6 +26,7 @@ export default class LockInfo {
         lockID,
         passcode,
         unlocked: true,    // Assume all locks are unlocked
+        lastKnownSecurity
     };
     
     return info;

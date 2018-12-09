@@ -307,8 +307,10 @@ export default class App extends React.Component {
       var stateUpdate = (s) => this.setState(s);
       let passcode = lockInfo.passcode || '';
       
-      this.lockComms.bindToDevice(lockInfo.lockID, lockInfo.name, passcode)
+      this.lockComms.bindToDevice(lockInfo.lockID, passcode)
         .then((lock) => {
+                         lock['name'] = lockInfo.name;
+                         
                          locks.push(lock);
                          nearby.push(lock);
               

@@ -21,6 +21,7 @@ export default class SettingsInfo {
   static create(autosaveLocation: boolean) {
     let info = {
         autosaveLocation,
+// TODO: Left hand use?
     };
     
     return info;
